@@ -247,16 +247,21 @@ SPECTACULAR_SETTINGS = {
 }
 
 # Security Settings for Production
+# Only enable SSL redirect if explicitly set (for servers with SSL certificates)
+SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=False, cast=bool)
+
 if not DEBUG:
-    SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = SECURE_SSL_REDIRECT  # Only secure cookies if using SSL
+    CSRF_COOKIE_SECURE = SECURE_SSL_REDIRECT  # Only secure CSRF if using SSL
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = 'DENY'
-    SECURE_HSTS_SECONDS = 31536000
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
+
+    # Only enable HSTS if SSL is enabled
+    if SECURE_SSL_REDIRECT:
+        SECURE_HSTS_SECONDS = 31536000
+        SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+        SECURE_HSTS_PRELOAD = True
 
 # ============================================
 # JAZZMIN SETTINGS - Custom Admin UI
