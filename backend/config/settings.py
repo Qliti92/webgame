@@ -156,7 +156,7 @@ STATICFILES_DIRS = [BASE_DIR / 'frontend' / 'static']
 
 # Use Whitenoise for serving static files in production
 if not DEBUG:
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # Media files
 MEDIA_URL = '/media/'
