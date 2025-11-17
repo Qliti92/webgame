@@ -1,0 +1,1022 @@
+/* ============================================
+   CUSTOM ADMIN STYLES - GAME TOPUP
+   Optimized beautiful design matching main site
+   ============================================ */
+
+/* ============================================
+   COLOR PALETTE - Enhanced & Beautiful
+   ============================================ */
+:root {
+    /* Primary Gradient Colors */
+    --gradient-start: #2563eb;    /* Blue-600 */
+    --gradient-end: #9333ea;      /* Purple-600 */
+    --gradient-dark-start: #1e40af;  /* Blue-800 */
+    --gradient-dark-end: #7e22ce;    /* Purple-800 */
+
+    /* Background Colors */
+    --bg-primary: #f8fafc;        /* Slate-50 - Very light */
+    --bg-secondary: #f1f5f9;      /* Slate-100 */
+    --bg-dark: #1e293b;           /* Slate-800 */
+    --bg-darker: #0f172a;         /* Slate-900 */
+
+    /* Text Colors */
+    --text-primary: #1e293b;      /* Slate-800 */
+    --text-secondary: #64748b;    /* Slate-500 */
+    --text-light: #cbd5e1;        /* Slate-300 */
+
+    /* Accent Colors */
+    --success: #10b981;           /* Green-500 */
+    --warning: #f59e0b;           /* Amber-500 */
+    --danger: #ef4444;            /* Red-500 */
+    --info: #3b82f6;              /* Blue-500 */
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+    /* Border Radius */
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+}
+
+/* ============================================
+   GLOBAL STYLES & BODY
+   ============================================ */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: var(--bg-primary) !important;
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* ============================================
+   NAVBAR - Beautiful Gradient
+   ============================================ */
+.main-header.navbar {
+    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%) !important;
+    border-bottom: none !important;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15) !important;
+    padding: 0.75rem 1rem !important;
+}
+
+.navbar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.95) !important;
+    font-weight: 500;
+    padding: 0.5rem 1rem !important;
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    color: white !important;
+}
+
+.navbar-nav .nav-link i {
+    margin-right: 0.5rem;
+    font-size: 1.1em;
+}
+
+/* Search Form in Navbar */
+.navbar-search-block .form-control {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: white !important;
+    border-radius: var(--radius-lg);
+    padding: 0.5rem 1rem;
+}
+
+.navbar-search-block .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.navbar-search-block .form-control:focus {
+    background-color: rgba(255, 255, 255, 0.3) !important;
+    border-color: white !important;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1) !important;
+}
+
+/* ============================================
+   BRAND/LOGO AREA
+   ============================================ */
+.brand-link {
+    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding: 1.2rem 1rem !important;
+    transition: all 0.3s ease;
+}
+
+.brand-link:hover {
+    background: linear-gradient(135deg, var(--gradient-dark-start) 0%, var(--gradient-dark-end) 100%) !important;
+}
+
+.brand-link .brand-text {
+    color: white !important;
+    font-weight: 700 !important;
+    font-size: 1.3rem !important;
+    letter-spacing: 0.5px;
+}
+
+.brand-link .brand-image {
+    opacity: 1;
+    max-height: 40px;
+}
+
+/* ============================================
+   SIDEBAR - Modern Dark Theme
+   ============================================ */
+.main-sidebar {
+    background-color: var(--bg-darker) !important;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Sidebar Navigation */
+.nav-sidebar {
+    padding: 0.5rem 0;
+}
+
+.nav-sidebar > .nav-item {
+    margin-bottom: 0.25rem;
+}
+
+.nav-sidebar .nav-link {
+    color: var(--text-light) !important;
+    padding: 0.75rem 1rem !important;
+    margin: 0 0.5rem !important;
+    border-radius: var(--radius-md) !important;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.nav-sidebar .nav-link:hover {
+    background-color: rgba(37, 99, 235, 0.15) !important;
+    color: white !important;
+    transform: translateX(3px);
+}
+
+.nav-sidebar .nav-link.active,
+.nav-sidebar .nav-link.active:hover {
+    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%) !important;
+    color: white !important;
+    box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+    transform: translateX(0);
+}
+
+.nav-sidebar .nav-icon {
+    margin-right: 0.75rem !important;
+    font-size: 1.1em;
+    width: 20px;
+    text-align: center;
+}
+
+/* Sidebar Sub-menu */
+.nav-treeview {
+    padding-left: 0 !important;
+}
+
+.nav-treeview > .nav-item > .nav-link {
+    padding-left: 3rem !important;
+    font-size: 0.9em;
+}
+
+.nav-treeview > .nav-item > .nav-link::before {
+    content: '•';
+    margin-right: 0.5rem;
+    color: var(--text-secondary);
+}
+
+/* Sidebar User Panel */
+.user-panel {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem !important;
+    margin-bottom: 1rem;
+}
+
+.user-panel .info {
+    color: white !important;
+    font-weight: 600;
+}
+
+/* ============================================
+   CONTENT WRAPPER
+   ============================================ */
+.content-wrapper {
+    background-color: var(--bg-primary) !important;
+    padding: 1.5rem !important;
+}
+
+.content-header {
+    padding: 0 0 1.5rem 0 !important;
+}
+
+.content-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+    background-color: transparent !important;
+    padding: 0 !important;
+    margin: 0.5rem 0 0 0 !important;
+}
+
+.breadcrumb-item {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.breadcrumb-item.active {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.breadcrumb-item a {
+    color: var(--gradient-start);
+    text-decoration: none;
+}
+
+.breadcrumb-item a:hover {
+    color: var(--gradient-end);
+    text-decoration: underline;
+}
+
+/* ============================================
+   CARDS - Beautiful & Modern
+   ============================================ */
+.card {
+    border: none !important;
+    border-radius: var(--radius-lg) !important;
+    box-shadow: var(--shadow-md) !important;
+    margin-bottom: 1.5rem;
+    background-color: white;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-lg) !important;
+    transform: translateY(-2px);
+}
+
+.card-header {
+    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%) !important;
+    color: white !important;
+    border: none !important;
+    padding: 1rem 1.25rem !important;
+    font-weight: 600;
+    border-radius: 0 !important;
+}
+
+.card-header h3,
+.card-header .card-title {
+    color: white !important;
+    font-size: 1.1rem !important;
+    font-weight: 600 !important;
+    margin: 0 !important;
+}
+
+.card-header .card-tools {
+    margin: 0 !important;
+}
+
+.card-header .card-tools .btn {
+    color: white;
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.card-body {
+    padding: 1.5rem !important;
+}
+
+.card-footer {
+    background-color: var(--bg-secondary) !important;
+    border-top: 1px solid #e2e8f0 !important;
+    padding: 1rem 1.25rem !important;
+}
+
+/* Card Variants */
+.card-primary:not(.card-outline) > .card-header {
+    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%) !important;
+}
+
+.card-success:not(.card-outline) > .card-header {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+}
+
+.card-warning:not(.card-outline) > .card-header {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+}
+
+.card-danger:not(.card-outline) > .card-header {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+}
+
+/* ============================================
+   TABLES - Clean & Modern
+   ============================================ */
+.table-responsive {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+}
+
+.table {
+    margin-bottom: 0 !important;
+    background-color: white;
+}
+
+.table thead th {
+    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%) !important;
+    color: white !important;
+    font-weight: 600 !important;
+    border: none !important;
+    padding: 1rem 1.25rem !important;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table tbody tr {
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(37, 99, 235, 0.03) !important;
+    transform: scale(1.001);
+}
+
+.table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.table tbody td {
+    padding: 1rem 1.25rem !important;
+    vertical-align: middle !important;
+    color: var(--text-primary);
+}
+
+.table tbody td a {
+    color: var(--gradient-start);
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.table tbody td a:hover {
+    color: var(--gradient-end);
+    text-decoration: underline;
+}
+
+/* Table Striped */
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(248, 250, 252, 0.5);
+}
+
+/* ============================================
+   BUTTONS - Beautiful Gradients
+   ============================================ */
+.btn {
+    border-radius: var(--radius-md) !important;
+    padding: 0.5rem 1.25rem !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+    border: none !important;
+    box-shadow: var(--shadow-sm);
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md) !important;
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+/* Primary Button - Gradient */
+.btn-primary {
+    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%) !important;
+    color: white !important;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--gradient-dark-start) 0%, var(--gradient-dark-end) 100%) !important;
+    color: white !important;
+}
+
+/* Other Button Variants */
+.btn-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+    color: white !important;
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+    color: white !important;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important;
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+    color: white !important;
+}
+
+.btn-warning:hover {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;
+}
+
+.btn-info {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+    color: white !important;
+}
+
+.btn-info:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #64748b 0%, #475569 100%) !important;
+    color: white !important;
+}
+
+/* Small Buttons */
+.btn-sm {
+    padding: 0.375rem 0.875rem !important;
+    font-size: 0.875rem !important;
+}
+
+/* Large Buttons */
+.btn-lg {
+    padding: 0.75rem 1.75rem !important;
+    font-size: 1.1rem !important;
+}
+
+/* ============================================
+   FORMS - Beautiful Inputs
+   ============================================ */
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.form-control,
+.form-select {
+    border: 2px solid #e2e8f0 !important;
+    border-radius: var(--radius-md) !important;
+    padding: 0.625rem 1rem !important;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    background-color: white !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--gradient-start) !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+    outline: none;
+}
+
+.form-control:hover,
+.form-select:hover {
+    border-color: #cbd5e1 !important;
+}
+
+/* Textarea */
+textarea.form-control {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* Select */
+select.form-control,
+.form-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 16px 12px;
+    padding-right: 2.5rem !important;
+}
+
+/* Checkbox & Radio */
+.form-check-input {
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid #cbd5e1;
+    border-radius: 0.25rem;
+}
+
+.form-check-input:checked {
+    background-color: var(--gradient-start);
+    border-color: var(--gradient-start);
+}
+
+.form-check-input:focus {
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.form-check-label {
+    margin-left: 0.5rem;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* Help Text */
+.help-block,
+.form-text {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-top: 0.375rem;
+}
+
+/* ============================================
+   DASHBOARD WIDGETS
+   ============================================ */
+.info-box {
+    box-shadow: var(--shadow-md) !important;
+    border-radius: var(--radius-lg) !important;
+    min-height: 90px;
+    transition: all 0.3s ease;
+    border: none !important;
+    overflow: hidden;
+}
+
+.info-box:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl) !important;
+}
+
+.info-box-icon {
+    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%) !important;
+    color: white !important;
+    border-radius: var(--radius-lg) 0 0 var(--radius-lg) !important;
+    width: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.info-box-icon > i {
+    font-size: 2.5rem;
+}
+
+.info-box-content {
+    padding: 1rem 1.25rem;
+}
+
+.info-box-text {
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+}
+
+.info-box-number {
+    font-weight: 700;
+    font-size: 1.75rem;
+    color: var(--text-primary);
+}
+
+/* Small Box */
+.small-box {
+    border-radius: var(--radius-lg) !important;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    border: none !important;
+    position: relative;
+}
+
+.small-box:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+}
+
+.small-box > .inner {
+    padding: 1.5rem;
+}
+
+.small-box h3 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+}
+
+.small-box p {
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.small-box .icon {
+    font-size: 5rem;
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.15;
+}
+
+.small-box-footer {
+    background-color: rgba(0, 0, 0, 0.1) !important;
+    padding: 0.75rem !important;
+    text-align: center;
+    font-weight: 600;
+    text-decoration: none;
+    display: block;
+    transition: all 0.2s ease;
+}
+
+.small-box-footer:hover {
+    background-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+/* ============================================
+   ALERTS & MESSAGES
+   ============================================ */
+.alert {
+    border-radius: var(--radius-md) !important;
+    border: none !important;
+    padding: 1rem 1.25rem !important;
+    box-shadow: var(--shadow-sm);
+    font-weight: 500;
+}
+
+.alert-success {
+    background-color: #d1fae5 !important;
+    color: #065f46 !important;
+}
+
+.alert-info {
+    background-color: #dbeafe !important;
+    color: #1e3a8a !important;
+}
+
+.alert-warning {
+    background-color: #fef3c7 !important;
+    color: #92400e !important;
+}
+
+.alert-danger {
+    background-color: #fee2e2 !important;
+    color: #991b1b !important;
+}
+
+/* Django Messages */
+.messages {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem 0;
+}
+
+.messages .alert {
+    margin-bottom: 0.5rem;
+}
+
+/* ============================================
+   PAGINATION
+   ============================================ */
+.pagination {
+    margin: 1.5rem 0;
+}
+
+.pagination .page-item {
+    margin: 0 0.25rem;
+}
+
+.pagination .page-link {
+    border: 2px solid #e2e8f0 !important;
+    color: var(--gradient-start) !important;
+    padding: 0.5rem 0.875rem !important;
+    border-radius: var(--radius-md) !important;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.pagination .page-link:hover {
+    background-color: rgba(37, 99, 235, 0.05) !important;
+    border-color: var(--gradient-start) !important;
+    color: var(--gradient-end) !important;
+}
+
+.pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%) !important;
+    border-color: var(--gradient-start) !important;
+    color: white !important;
+    box-shadow: var(--shadow-md);
+}
+
+.pagination .page-item.disabled .page-link {
+    background-color: #f1f5f9 !important;
+    border-color: #e2e8f0 !important;
+    color: #94a3b8 !important;
+}
+
+/* ============================================
+   BADGES
+   ============================================ */
+.badge {
+    padding: 0.375rem 0.75rem !important;
+    border-radius: var(--radius-md) !important;
+    font-weight: 600 !important;
+    font-size: 0.8rem !important;
+}
+
+.badge-primary {
+    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%) !important;
+    color: white !important;
+}
+
+.badge-success {
+    background-color: var(--success) !important;
+    color: white !important;
+}
+
+.badge-danger {
+    background-color: var(--danger) !important;
+    color: white !important;
+}
+
+.badge-warning {
+    background-color: var(--warning) !important;
+    color: white !important;
+}
+
+.badge-info {
+    background-color: var(--info) !important;
+    color: white !important;
+}
+
+.badge-secondary {
+    background-color: #64748b !important;
+    color: white !important;
+}
+
+/* ============================================
+   LOGIN PAGE - Beautiful Design
+   ============================================ */
+.login-page {
+    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%) !important;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-box {
+    width: 100%;
+    max-width: 400px;
+}
+
+.login-card-body,
+.register-card-body {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: 2.5rem !important;
+    box-shadow: var(--shadow-xl);
+}
+
+.login-logo,
+.register-logo {
+    margin-bottom: 1.5rem;
+}
+
+.login-logo a,
+.register-logo a {
+    color: white !important;
+    font-weight: 700 !important;
+    font-size: 2rem !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.login-box-msg,
+.register-box-msg {
+    color: var(--text-secondary);
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.main-footer {
+    background-color: var(--bg-darker) !important;
+    color: var(--text-light) !important;
+    border-top: none !important;
+    padding: 1.25rem !important;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.main-footer a {
+    color: white !important;
+    font-weight: 500;
+}
+
+.main-footer strong {
+    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+}
+
+/* ============================================
+   LINKS
+   ============================================ */
+a {
+    color: var(--gradient-start);
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+a:hover {
+    color: var(--gradient-end);
+}
+
+/* ============================================
+   TABS
+   ============================================ */
+.nav-tabs {
+    border-bottom: 2px solid #e2e8f0 !important;
+}
+
+.nav-tabs .nav-link {
+    border: none !important;
+    color: var(--text-secondary) !important;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem !important;
+    transition: all 0.2s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    color: var(--gradient-start) !important;
+    border-bottom: 2px solid var(--gradient-start) !important;
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--gradient-start) !important;
+    border-bottom: 2px solid var(--gradient-start) !important;
+    background-color: transparent !important;
+}
+
+/* ============================================
+   SCROLLBAR - Custom Beautiful Design
+   ============================================ */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+    border-radius: 10px;
+    border: 2px solid #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, var(--gradient-dark-start) 0%, var(--gradient-dark-end) 100%);
+}
+
+/* ============================================
+   LOADING & SPINNERS
+   ============================================ */
+.overlay {
+    background: rgba(0, 0, 0, 0.5) !important;
+    border-radius: var(--radius-lg);
+}
+
+.spinner-border {
+    border-color: var(--gradient-start);
+    border-right-color: transparent !important;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+@media (max-width: 991px) {
+    .content-wrapper {
+        padding: 1rem !important;
+    }
+
+    .card-body {
+        padding: 1rem !important;
+    }
+
+    .table thead th,
+    .table tbody td {
+        padding: 0.75rem !important;
+        font-size: 0.875rem;
+    }
+}
+
+@media (max-width: 767px) {
+    .content-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .small-box h3 {
+        font-size: 2rem;
+    }
+
+    .small-box .icon {
+        font-size: 4rem;
+    }
+
+    .info-box-icon {
+        width: 70px;
+    }
+
+    .info-box-icon > i {
+        font-size: 2rem;
+    }
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.card,
+.info-box,
+.small-box {
+    animation: fadeInUp 0.4s ease-out;
+}
+
+.nav-sidebar .nav-item {
+    animation: slideInLeft 0.3s ease-out;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+.gradient-bg {
+    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%) !important;
+    color: white !important;
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.shadow-beautiful {
+    box-shadow: var(--shadow-xl) !important;
+}
+
+/* ============================================
+   DARK MODE SUPPORT (Optional)
+   ============================================ */
+@media (prefers-color-scheme: dark) {
+    /* Add dark mode styles here if needed */
+}

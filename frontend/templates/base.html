@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Game TopUp{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Load i18n system -->
+    <script src="/static/js/i18n.js"></script>
+    <!-- Load unified modal system -->
+    <script src="/static/js/modal.js"></script>
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-gray-100">
+    <!-- Navbar -->
+    <nav class="bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <a href="/" class="text-2xl font-bold flex items-center">
+                    <i class="fas fa-gamepad mr-2"></i>
+                    Game TopUp
+                </a>
+                <div class="flex items-center space-x-6">
+                    <a href="/" class="hover:text-gray-200 transition">
+                        <i class="fas fa-home mr-1"></i> <span data-i18n="nav.home">Home</span>
+                    </a>
+                    <a href="/games/" class="hover:text-gray-200 transition">
+                        <i class="fas fa-gamepad mr-1"></i> <span data-i18n="nav.games">Games</span>
+                    </a>
+                    <a href="/dashboard/" id="dashboardLink" class="hover:text-gray-200 transition hidden">
+                        <i class="fas fa-tachometer-alt mr-1"></i> <span data-i18n="nav.dashboard">Dashboard</span>
+                    </a>
+                    <a href="/login/" id="loginLink" class="hover:text-gray-200 transition">
+                        <i class="fas fa-sign-in-alt mr-1"></i> <span data-i18n="nav.login">Login</span>
+                    </a>
+                    <a href="/register/" id="registerLink" class="hover:text-gray-200 transition">
+                        <i class="fas fa-user-plus mr-1"></i> <span data-i18n="nav.register">Register</span>
+                    </a>
+                    <button id="logoutBtn" class="hover:text-gray-200 transition hidden" onclick="handleLogout()">
+                        <i class="fas fa-sign-out-alt mr-1"></i> <span data-i18n="nav.logout">Logout</span>
+                    </button>
+
+                    <!-- Language Switcher -->
+                    <div class="relative inline-block" id="languageDropdown">
+                        <button onclick="toggleLanguageMenu()" class="flex items-center hover:text-gray-200 transition">
+                            <i class="fas fa-globe mr-2"></i>
+                            <span id="currentLanguage">VI</span>
+                            <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                        </button>
+                        <div id="languageMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                            <a href="#" onclick="changeLanguageTo('vi'); return false;" class="flex items-center px-4 py-2 text-gray-800 hover:bg-blue-50 transition">
+                                <span class="text-2xl mr-3">🇻🇳</span>
+                                <span class="font-medium">Tiếng Việt</span>
+                            </a>
+                            <a href="#" onclick="changeLanguageTo('en'); return false;" class="flex items-center px-4 py-2 text-gray-800 hover:bg-blue-50 transition">
+                                <span class="text-2xl mr-3">🇺🇸</span>
+                                <span class="font-medium">English</span>
+                            </a>
+                            <a href="#" onclick="changeLanguageTo('zh'); return false;" class="flex items-center px-4 py-2 text-gray-800 hover:bg-blue-50 transition">
+                                <span class="text-2xl mr-3">🇨🇳</span>
+                                <span class="font-medium">中文</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4" data-i18n="footer.about">Game TopUp</h3>
+                    <p class="text-gray-400" data-i18n="footer.aboutDesc">Hệ thống nạp game tự động, an toàn và nhanh chóng.</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4" data-i18n="footer.contact">Liên hệ</h3>
+                    <p class="text-gray-400"><span data-i18n="footer.email">Email</span>: support@gametopup.com</p>
+                    <p class="text-gray-400"><span data-i18n="footer.telegram">Telegram</span>: @gametopup</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4" data-i18n="footer.payment">Thanh toán</h3>
+                    <p class="text-gray-400">
+                        <i class="fab fa-bitcoin mr-2"></i> USDT TRC20
+                    </p>
+                    <p class="text-gray-400">
+                        <i class="fas fa-wallet mr-2"></i> <span data-i18n="footer.internalWallet">Ví nội bộ</span>
+                    </p>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 Game TopUp. <span data-i18n="footer.copyright">All rights reserved.</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    // Check if user is logged in and update navbar
+    document.addEventListener('DOMContentLoaded', function() {
+        const token = localStorage.getItem('access_token');
+        const dashboardLink = document.getElementById('dashboardLink');
+        const loginLink = document.getElementById('loginLink');
+        const registerLink = document.getElementById('registerLink');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        if (token) {
+            // User is logged in
+            if (dashboardLink) dashboardLink.classList.remove('hidden');
+            if (loginLink) loginLink.classList.add('hidden');
+            if (registerLink) registerLink.classList.add('hidden');
+            if (logoutBtn) logoutBtn.classList.remove('hidden');
+        } else {
+            // User is not logged in
+            if (dashboardLink) dashboardLink.classList.add('hidden');
+            if (loginLink) loginLink.classList.remove('hidden');
+            if (registerLink) registerLink.classList.remove('hidden');
+            if (logoutBtn) logoutBtn.classList.add('hidden');
+        }
+    });
+
+    // Toggle language menu
+    function toggleLanguageMenu() {
+        const menu = document.getElementById('languageMenu');
+        menu.classList.toggle('hidden');
+    }
+
+    // Close language menu when clicking outside
+    document.addEventListener('click', function(event) {
+        const dropdown = document.getElementById('languageDropdown');
+        if (dropdown && !dropdown.contains(event.target)) {
+            const menu = document.getElementById('languageMenu');
+            if (menu) menu.classList.add('hidden');
+        }
+    });
+
+    // Change language (wrapper function for i18n.changeLanguage)
+    async function changeLanguageTo(lang) {
+        console.log('🌍 Changing language to:', lang);
+        console.log('🌍 window.i18n:', window.i18n);
+
+        if (window.i18n) {
+            try {
+                const result = await window.i18n.changeLanguage(lang);
+                console.log('✅ Language changed successfully:', result);
+                // Close menu
+                const menu = document.getElementById('languageMenu');
+                if (menu) menu.classList.add('hidden');
+            } catch (error) {
+                console.error('❌ Error changing language:', error);
+            }
+        } else {
+            console.error('❌ window.i18n is not available!');
+        }
+    }
+
+    // Handle logout
+    function handleLogout() {
+        // Remove tokens from localStorage
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+
+        // Redirect to home page
+        window.location.href = '/';
+    }
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

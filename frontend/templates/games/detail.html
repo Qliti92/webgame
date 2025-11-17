@@ -1,0 +1,672 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ game.name }} - Nạp Game{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <!-- Back Button -->
+    <a href="/games/" class="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6">
+        <i class="fas fa-arrow-left mr-2"></i>
+        <span data-i18n="gameDetail.backToList">Quay lại danh sách game</span>
+    </a>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Game Info -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-lg shadow-lg p-6 sticky top-6">
+                <img id="gameImage" class="w-full rounded-lg mb-4" src="" alt="">
+                <h1 id="gameName" class="text-2xl font-bold text-gray-800 mb-2"></h1>
+                <p id="gameDescription" class="text-gray-600 mb-4"></p>
+                <div class="border-t pt-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-gray-600" data-i18n="gameDetail.status">Trạng thái:</span>
+                        <span id="gameStatus" class="px-3 py-1 rounded-full text-sm font-semibold"></span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-600" data-i18n="gameDetail.valueRange">Giá trị:</span>
+                        <span class="font-semibold">
+                            <span id="gameMinAmount"></span> - <span id="gameMaxAmount"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Form -->
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">
+                    <i class="fas fa-shopping-cart text-blue-600 mr-2"></i>
+                    <span data-i18n="gameDetail.createOrder">Tạo đơn nạp</span>
+                </h2>
+
+                <form id="orderForm" class="space-y-6">
+                    <!-- Server Selection -->
+                    <div id="serverSection" class="hidden">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-server mr-1"></i>
+                            <span data-i18n="gameDetail.selectServer">Chọn Server</span> *
+                        </label>
+                        <select id="serverSelect" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="" data-i18n="gameDetail.selectServerOption">-- Chọn server --</option>
+                        </select>
+                    </div>
+
+                    <!-- Package Selection -->
+                    <div id="packageSection">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-box mr-1"></i>
+                            <span data-i18n="gameDetail.selectPackage">Gói nạp (Tùy chọn)</span>
+                        </label>
+                        <div id="packageGrid" class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                            <!-- Packages will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Custom Amount -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-coins mr-1"></i>
+                            <span data-i18n="gameDetail.customAmount">Hoặc nhập số tiền tùy chỉnh (USD)</span> *
+                        </label>
+                        <input
+                            type="number"
+                            id="customAmount"
+                            data-i18n-attr="placeholder"
+                            data-i18n="gameDetail.enterAmount"
+                            placeholder="Nhập số tiền"
+                            step="0.01"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                        <p class="mt-1 text-sm text-gray-500">
+                            <span data-i18n="gameDetail.min">Min</span>: <span id="minAmount"></span> - <span data-i18n="gameDetail.max">Max</span>: <span id="maxAmount"></span>
+                        </p>
+                    </div>
+
+                    <!-- Game Account Info -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-user mr-1"></i>
+                            <span data-i18n="gameDetail.gameUid">UID / ID Nhân vật</span> *
+                        </label>
+                        <input
+                            type="text"
+                            id="gameUid"
+                            data-i18n-attr="placeholder"
+                            data-i18n="gameDetail.enterUid"
+                            placeholder="Nhập UID hoặc ID nhân vật"
+                            required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-user-tag mr-1"></i>
+                            <span data-i18n="gameDetail.gameUsername">Tên tài khoản game (Tùy chọn)</span>
+                        </label>
+                        <input
+                            type="text"
+                            id="gameUsername"
+                            data-i18n-attr="placeholder"
+                            data-i18n="gameDetail.enterUsername"
+                            placeholder="Tên nhân vật hoặc tài khoản"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                    </div>
+
+                    <!-- Note -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-comment mr-1"></i>
+                            <span data-i18n="gameDetail.note">Ghi chú (Tùy chọn)</span>
+                        </label>
+                        <textarea
+                            id="customerNote"
+                            rows="3"
+                            data-i18n-attr="placeholder"
+                            data-i18n="gameDetail.enterNote"
+                            placeholder="Ghi chú cho admin..."
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        ></textarea>
+                    </div>
+
+                    <!-- Payment Method -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-credit-card mr-1"></i>
+                            <span data-i18n="gameDetail.paymentMethod">Phương thức thanh toán</span> *
+                        </label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <label class="payment-method cursor-pointer">
+                                <input type="radio" name="paymentMethod" value="wallet" class="hidden">
+                                <div class="border-2 border-gray-300 rounded-lg p-4 hover:border-blue-500 transition">
+                                    <i class="fas fa-wallet text-2xl text-blue-600 mb-2"></i>
+                                    <p class="font-semibold" data-i18n="gameDetail.wallet">Ví nội bộ</p>
+                                    <p class="text-sm text-gray-500"><span data-i18n="gameDetail.balance">Số dư</span>: <span id="walletBalance">$0.00</span></p>
+                                </div>
+                            </label>
+                            <label class="payment-method cursor-pointer">
+                                <input type="radio" name="paymentMethod" value="crypto" class="hidden">
+                                <div class="border-2 border-gray-300 rounded-lg p-4 hover:border-blue-500 transition">
+                                    <i class="fab fa-bitcoin text-2xl text-yellow-600 mb-2"></i>
+                                    <p class="font-semibold" data-i18n="gameDetail.crypto">Crypto</p>
+                                    <p class="text-sm text-gray-500" data-i18n="gameDetail.cryptoPayment">Crypto payment</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Price Summary -->
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600" data-i18n="gameDetail.totalAmount">Giá trị nạp:</span>
+                            <span class="text-xl font-bold text-gray-800" id="totalUSD">$0.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button
+                        type="submit"
+                        class="w-full px-6 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-lg rounded-lg hover:from-blue-700 hover:to-purple-700 transition transform hover:scale-105"
+                    >
+                        <i class="fas fa-check-circle mr-2"></i>
+                        <span data-i18n="gameDetail.createOrderBtn">Tạo đơn hàng</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let gameData = null;
+let selectedPackage = null;  // Store selected package
+
+document.addEventListener('DOMContentLoaded', function() {
+    const slug = window.location.pathname.split('/')[2];
+    loadGameDetail(slug);
+    loadWalletBalance();
+
+    // Payment method selection
+    document.querySelectorAll('.payment-method').forEach(label => {
+        label.addEventListener('click', function() {
+            document.querySelectorAll('.payment-method div').forEach(div => {
+                div.classList.remove('border-blue-500', 'bg-blue-50');
+            });
+            this.querySelector('div').classList.add('border-blue-500', 'bg-blue-50');
+        });
+    });
+
+    // Amount calculation
+    document.getElementById('customAmount')?.addEventListener('input', function() {
+        // Clear selected package when manually typing amount
+        selectedPackage = null;
+        document.querySelectorAll('.package-item').forEach(el => {
+            el.classList.remove('border-blue-500', 'bg-blue-50');
+        });
+        updateTotalPrice();
+    });
+
+    // Form submission
+    document.getElementById('orderForm')?.addEventListener('submit', handleOrderSubmit);
+});
+
+function loadGameDetail(slug) {
+    fetch(`/api/games/${slug}/`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Không thể tải thông tin game');
+            }
+            return response.json();
+        })
+        .then(game => {
+            gameData = game;
+            displayGameInfo(game);
+            loadPackages(game.packages);
+            if (game.requires_server && game.servers) {
+                loadServers(game.servers);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            window.modal.error(
+                'Lỗi tải game',
+                'Không thể tải thông tin game. Vui lòng thử lại sau.',
+                {
+                    actions: [{
+                        label: 'Quay lại',
+                        style: 'primary',
+                        onClick: () => window.location.href = '/games/'
+                    }]
+                }
+            );
+        });
+}
+
+function displayGameInfo(game) {
+    document.getElementById('gameImage').src = game.image;
+    document.getElementById('gameName').textContent = game.name;
+    document.getElementById('gameDescription').textContent = game.description;
+    document.getElementById('gameMinAmount').textContent = formatCurrency(game.min_amount);
+    document.getElementById('gameMaxAmount').textContent = formatCurrency(game.max_amount);
+    document.getElementById('minAmount').textContent = formatCurrency(game.min_amount);
+    document.getElementById('maxAmount').textContent = formatCurrency(game.max_amount);
+
+    const statusSpan = document.getElementById('gameStatus');
+    if (game.status === 'active') {
+        statusSpan.className = 'px-3 py-1 rounded-full text-sm font-semibold bg-green-500 text-white';
+        statusSpan.textContent = t('games.active', 'Hoạt động');
+    } else if (game.status === 'maintenance') {
+        statusSpan.className = 'px-3 py-1 rounded-full text-sm font-semibold bg-yellow-500 text-white';
+        statusSpan.textContent = t('games.maintenance', 'Bảo trì');
+    } else {
+        statusSpan.className = 'px-3 py-1 rounded-full text-sm font-semibold bg-gray-500 text-white';
+        statusSpan.textContent = t('games.inactive', 'Tạm dừng');
+    }
+}
+
+function loadServers(servers) {
+    const serverSection = document.getElementById('serverSection');
+    const serverSelect = document.getElementById('serverSelect');
+
+    if (servers && servers.length > 0) {
+        serverSection.classList.remove('hidden');
+        servers.forEach(server => {
+            const option = document.createElement('option');
+            option.value = server.id;
+            option.textContent = server.name;
+            serverSelect.appendChild(option);
+        });
+    }
+}
+
+function loadPackages(packages) {
+    const packageGrid = document.getElementById('packageGrid');
+
+    if (packages && packages.length > 0) {
+        packages.forEach(pkg => {
+            const div = document.createElement('div');
+            div.className = 'package-item border-2 border-gray-300 rounded-lg p-4 cursor-pointer hover:border-blue-500 transition text-center';
+            div.dataset.packageId = pkg.id;  // Store package ID
+            div.innerHTML = `
+                <p class="font-bold text-lg mb-1">${pkg.name}</p>
+                <p class="text-blue-600 font-semibold">${formatCurrency(pkg.final_price)}</p>
+                ${pkg.discount_percent > 0 ? `<p class="text-xs text-green-600">${t('gameDetail.discount', 'Giảm')} ${pkg.discount_percent}%</p>` : ''}
+            `;
+            div.onclick = () => selectPackage(pkg);
+            packageGrid.appendChild(div);
+        });
+    }
+}
+
+function selectPackage(pkg) {
+    // Store selected package
+    selectedPackage = pkg;
+
+    // Update amount input
+    document.getElementById('customAmount').value = pkg.amount;
+
+    // Update UI
+    document.querySelectorAll('.package-item').forEach(el => {
+        el.classList.remove('border-blue-500', 'bg-blue-50');
+    });
+    const selectedEl = document.querySelector(`[data-package-id="${pkg.id}"]`);
+    if (selectedEl) {
+        selectedEl.classList.add('border-blue-500', 'bg-blue-50');
+    }
+
+    updateTotalPrice();
+}
+
+function updateTotalPrice() {
+    const amount = parseFloat(document.getElementById('customAmount').value) || 0;
+    document.getElementById('totalUSD').textContent = formatCurrency(amount);
+}
+
+function loadWalletBalance() {
+    const token = localStorage.getItem('access_token');
+    if (!token) return;
+
+    fetch('/api/wallets/', {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('walletBalance').textContent = formatCurrency(data.balance);
+    })
+    .catch(error => console.error('Error loading wallet:', error));
+}
+
+function handleOrderSubmit(e) {
+    e.preventDefault();
+
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+        window.modal.warning(
+            'Yêu cầu đăng nhập',
+            'Vui lòng đăng nhập để tạo đơn hàng',
+            {
+                actions: [{
+                    label: 'Đăng nhập',
+                    style: 'primary',
+                    icon: 'fas fa-sign-in-alt',
+                    onClick: () => window.location.href = '/login/'
+                }]
+            }
+        );
+        return;
+    }
+
+    // Validate form
+    const gameUid = document.getElementById('gameUid').value.trim();
+    const amount = parseFloat(document.getElementById('customAmount').value);
+    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value;
+
+    // Validation
+    if (!gameUid) {
+        window.modal.error(
+            'Thiếu thông tin',
+            'Vui lòng nhập UID / ID nhân vật của bạn'
+        );
+        return;
+    }
+
+    if (!amount || amount <= 0) {
+        window.modal.error(
+            'Thiếu thông tin',
+            'Vui lòng chọn gói hoặc nhập số tiền nạp'
+        );
+        return;
+    }
+
+    if (amount < gameData.min_amount || amount > gameData.max_amount) {
+        window.modal.error(
+            'Số tiền không hợp lệ',
+            `Số tiền phải từ ${formatCurrency(gameData.min_amount)} đến ${formatCurrency(gameData.max_amount)}`
+        );
+        return;
+    }
+
+    if (!paymentMethod) {
+        window.modal.error(
+            'Thiếu thông tin',
+            'Vui lòng chọn phương thức thanh toán'
+        );
+        return;
+    }
+
+    if (gameData.requires_server) {
+        const server = document.getElementById('serverSelect').value;
+        if (!server) {
+            window.modal.error(
+                'Thiếu thông tin',
+                'Vui lòng chọn server'
+            );
+            return;
+        }
+    }
+
+    // Build form data
+    const formData = {
+        game: gameData.id,
+        game_uid: gameUid,
+        game_username: document.getElementById('gameUsername').value,
+        amount: amount,
+        customer_note: document.getElementById('customerNote').value,
+        payment_method: paymentMethod
+    };
+
+    // Add package_id if selected
+    if (selectedPackage) {
+        formData.game_package = selectedPackage.id;
+    }
+
+    // Add server if required
+    if (gameData.requires_server) {
+        formData.server = document.getElementById('serverSelect').value;
+    }
+
+    // Show confirmation modal BEFORE creating order
+    showOrderConfirmation(formData, paymentMethod, amount, gameUid);
+}
+
+// New function: Show confirmation modal
+function showOrderConfirmation(formData, paymentMethod, amount, gameUid) {
+    const paymentMethodText = paymentMethod === 'wallet' ? 'Ví nội bộ' : 'Crypto (USDT TRC20)';
+    const packageInfo = selectedPackage ? `<p class="text-sm text-gray-700 mb-2"><strong>Gói:</strong> ${selectedPackage.name}</p>` : '';
+
+    window.modal.show({
+        type: 'question',
+        title: 'Xác nhận tạo đơn hàng',
+        message: 'Vui lòng kiểm tra thông tin trước khi xác nhận:',
+        html: `
+            <div class="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <p class="text-sm text-gray-700 mb-2">
+                    <strong>Game:</strong> ${gameData.name}
+                </p>
+                ${packageInfo}
+                <p class="text-sm text-gray-700 mb-2">
+                    <strong>Số tiền:</strong> <span class="text-lg font-bold text-blue-600">${formatCurrency(amount)}</span>
+                </p>
+                <p class="text-sm text-gray-700 mb-2">
+                    <strong>UID:</strong> ${gameUid}
+                </p>
+                <p class="text-sm text-gray-700 mb-2">
+                    <strong>Phương thức thanh toán:</strong> ${paymentMethodText}
+                </p>
+            </div>
+            <div class="mt-3 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                <p class="text-xs text-yellow-800">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Hệ thống sẽ tự động tạo đơn hàng và thanh toán ngay sau khi bạn xác nhận.
+                </p>
+            </div>
+        `,
+        actions: [
+            {
+                label: 'Hủy',
+                style: 'secondary',
+                icon: 'fas fa-times'
+            },
+            {
+                label: 'Xác nhận & Thanh toán ngay',
+                style: 'primary',
+                icon: 'fas fa-check-circle',
+                onClick: () => {
+                    createOrderAndPay(formData, paymentMethod);
+                }
+            }
+        ]
+    });
+}
+
+// New function: Create order and pay immediately
+function createOrderAndPay(formData, paymentMethod) {
+    const token = localStorage.getItem('access_token');
+
+    console.log('📤 Creating order and paying:', formData);
+
+    // Show loading modal
+    window.modal.show({
+        type: 'info',
+        title: 'Đang xử lý...',
+        message: 'Vui lòng đợi trong giây lát',
+        html: `
+            <div class="flex justify-center items-center py-4">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
+            <p class="text-center text-sm text-gray-600 mt-2">Đang tạo đơn hàng và xử lý thanh toán...</p>
+        `,
+        actions: []  // No buttons during loading
+    });
+
+    // Step 1: Create order
+    fetch('/api/orders/create/', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => {
+        console.log('📥 Create order response:', response.status);
+        if (!response.ok) {
+            return response.json().then(err => {
+                throw new Error(err.detail || err.error || JSON.stringify(err) || 'Không thể tạo đơn hàng');
+            });
+        }
+        return response.json();
+    })
+    .then(orderData => {
+        console.log('✅ Order created:', orderData.order_id);
+
+        // Step 2: Pay immediately
+        return fetch(`/api/orders/${orderData.order_id}/payment/`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                payment_method: paymentMethod
+            })
+        })
+        .then(payResponse => {
+            console.log('📥 Payment response:', payResponse.status);
+            if (!payResponse.ok) {
+                return payResponse.json().then(err => {
+                    throw new Error(err.error || err.detail || 'Không thể thanh toán');
+                });
+            }
+            return payResponse.json();
+        })
+        .then(payData => {
+            console.log('✅ Payment successful');
+            return { orderData, payData };
+        });
+    })
+    .then(({ orderData, payData }) => {
+        // Success! Show success modal
+        window.modal.success(
+            'Thanh toán thành công!',
+            `Đơn hàng của bạn đã được tạo và thanh toán thành công`,
+            {
+                html: `
+                    <div class="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
+                        <p class="text-sm text-gray-700 mb-2">
+                            <strong>Mã đơn hàng:</strong> <span class="font-mono text-xs">${orderData.order_id}</span>
+                        </p>
+                        <p class="text-sm text-gray-700 mb-2">
+                            <strong>Game:</strong> ${gameData.name}
+                        </p>
+                        <p class="text-sm text-gray-700 mb-2">
+                            <strong>Số tiền:</strong> ${formatCurrency(formData.amount)}
+                        </p>
+                        <p class="text-sm text-gray-700 mb-2">
+                            <strong>UID:</strong> ${formData.game_uid}
+                        </p>
+                        <p class="text-sm text-gray-700">
+                            <strong>Trạng thái:</strong> <span class="text-green-600 font-semibold">Đã thanh toán</span>
+                        </p>
+                    </div>
+                    <div class="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                        <p class="text-xs text-blue-800">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Đơn hàng của bạn đang được xử lý. Vui lòng kiểm tra chi tiết đơn hàng để theo dõi tiến trình.
+                        </p>
+                    </div>
+                `,
+                actions: [
+                    {
+                        label: 'Xem chi tiết đơn hàng',
+                        style: 'primary',
+                        icon: 'fas fa-eye',
+                        onClick: () => window.location.href = `/orders/${orderData.order_id}/`
+                    },
+                    {
+                        label: 'Tạo đơn mới',
+                        style: 'secondary',
+                        onClick: () => {
+                            // Reset form
+                            document.getElementById('orderForm').reset();
+                            selectedPackage = null;
+                            document.querySelectorAll('.package-item').forEach(el => {
+                                el.classList.remove('border-blue-500', 'bg-blue-50');
+                            });
+                            document.querySelectorAll('.payment-method div').forEach(el => {
+                                el.classList.remove('border-blue-500', 'bg-blue-50');
+                            });
+                            updateTotalPrice();
+                        }
+                    }
+                ]
+            }
+        );
+    })
+    .catch(error => {
+        console.error('❌ Error:', error);
+
+        // Show error modal
+        window.modal.error(
+            'Thanh toán thất bại',
+            error.message || 'Có lỗi xảy ra trong quá trình xử lý',
+            {
+                html: `
+                    <div class="mt-4 p-4 bg-red-50 rounded-lg border border-red-200">
+                        <p class="text-sm text-red-800">
+                            <strong>Chi tiết lỗi:</strong><br>
+                            ${error.message || 'Không xác định được lỗi'}
+                        </p>
+                    </div>
+                    <div class="mt-3 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                        <p class="text-xs text-yellow-800">
+                            <i class="fas fa-exclamation-triangle mr-1"></i>
+                            Nếu lỗi vẫn tiếp diễn, vui lòng liên hệ support để được hỗ trợ.
+                        </p>
+                    </div>
+                `,
+                actions: [
+                    {
+                        label: 'Thử lại',
+                        style: 'primary',
+                        icon: 'fas fa-redo',
+                        onClick: () => {
+                            document.getElementById('orderForm').dispatchEvent(new Event('submit', { cancelable: true }));
+                        }
+                    },
+                    {
+                        label: 'Xem ví của tôi',
+                        style: 'secondary',
+                        icon: 'fas fa-wallet',
+                        onClick: () => window.location.href = '/wallet/deposits/'
+                    },
+                    {
+                        label: 'Đóng',
+                        style: 'secondary'
+                    }
+                ]
+            }
+        );
+    });
+}
+
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD'
+    }).format(amount);
+}
+
+// Helper function for i18n
+function t(key, defaultValue) {
+    if (window.i18n && window.i18n.t) {
+        return window.i18n.t(key);
+    }
+    return defaultValue;
+}
+</script>
+{% endblock %}

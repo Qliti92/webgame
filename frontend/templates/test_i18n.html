@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test i18n</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load i18n system -->
+    <script src="/static/js/i18n.js"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-8">
+        <h1 class="text-3xl font-bold mb-6">🧪 i18n System Test</h1>
+
+        <!-- Language Switcher -->
+        <div class="mb-6">
+            <h2 class="text-xl font-bold mb-3">Language Switcher:</h2>
+            <div class="flex gap-3">
+                <button onclick="testChangeLanguage('vi')" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                    🇻🇳 Tiếng Việt
+                </button>
+                <button onclick="testChangeLanguage('en')" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+                    🇺🇸 English
+                </button>
+                <button onclick="testChangeLanguage('zh')" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                    🇨🇳 中文
+                </button>
+            </div>
+        </div>
+
+        <!-- Test Translations -->
+        <div class="mb-6 p-4 bg-gray-50 rounded">
+            <h2 class="text-xl font-bold mb-3">Test Translations:</h2>
+            <p><strong>nav.home:</strong> <span data-i18n="nav.home">Home</span></p>
+            <p><strong>nav.login:</strong> <span data-i18n="nav.login">Login</span></p>
+            <p><strong>auth.email:</strong> <span data-i18n="auth.email">Email</span></p>
+            <p><strong>home.welcome:</strong> <span data-i18n="home.welcome">Welcome</span></p>
+        </div>
+
+        <!-- Debug Info -->
+        <div class="mb-6 p-4 bg-yellow-50 rounded">
+            <h2 class="text-xl font-bold mb-3">Debug Info:</h2>
+            <div id="debugInfo" class="font-mono text-sm"></div>
+        </div>
+
+        <!-- Console -->
+        <div class="p-4 bg-black text-green-400 rounded font-mono text-sm" id="console">
+            Console output will appear here...
+        </div>
+    </div>
+
+    <script>
+        function log(message) {
+            const consoleEl = document.getElementById('console');
+            const time = new Date().toLocaleTimeString();
+            consoleEl.innerHTML += `<div>[${time}] ${message}</div>`;
+            console.log(message);
+        }
+
+        function updateDebugInfo() {
+            const debugInfo = document.getElementById('debugInfo');
+            if (window.i18n) {
+                debugInfo.innerHTML = `
+                    <p><strong>i18n loaded:</strong> ✅ Yes</p>
+                    <p><strong>Current language:</strong> ${window.i18n.getCurrentLanguage()}</p>
+                    <p><strong>Supported languages:</strong> ${window.i18n.getSupportedLanguages().join(', ')}</p>
+                    <p><strong>localStorage language:</strong> ${localStorage.getItem('language') || 'not set'}</p>
+                    <p><strong>Test translation (nav.home):</strong> ${window.i18n.t('nav.home')}</p>
+                `;
+            } else {
+                debugInfo.innerHTML = '<p class="text-red-600"><strong>⚠️ i18n NOT loaded!</strong></p>';
+            }
+        }
+
+        async function testChangeLanguage(lang) {
+            log(`Attempting to change language to: ${lang}`);
+
+            if (!window.i18n) {
+                log('❌ ERROR: window.i18n is not defined!');
+                return;
+            }
+
+            try {
+                log(`Calling i18n.changeLanguage('${lang}')...`);
+                const result = await window.i18n.changeLanguage(lang);
+                log(`✅ Language changed successfully! Result: ${result}`);
+                updateDebugInfo();
+            } catch (error) {
+                log(`❌ ERROR: ${error.message}`);
+                console.error(error);
+            }
+        }
+
+        // Initial check
+        document.addEventListener('DOMContentLoaded', () => {
+            log('DOM loaded');
+
+            setTimeout(() => {
+                if (window.i18n) {
+                    log('✅ i18n system loaded successfully');
+                    log(`Current language: ${window.i18n.getCurrentLanguage()}`);
+                    updateDebugInfo();
+                } else {
+                    log('❌ ERROR: i18n system not loaded!');
+                    log('Check if /static/js/i18n.js is accessible');
+                }
+            }, 500);
+        });
+
+        // Listen for language change events
+        window.addEventListener('languageChanged', (event) => {
+            log(`📢 Event: languageChanged to ${event.detail.language}`);
+        });
+    </script>
+</body>
+</html>

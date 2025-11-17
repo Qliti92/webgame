@@ -1,0 +1,284 @@
+{% extends 'base.html' %}
+
+{% block title %}Nạp tiền - Game TopUp{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Back Button -->
+    <a href="/dashboard/" class="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6">
+        <i class="fas fa-arrow-left mr-2"></i>
+        <span data-i18n="order.backToDashboard">Quay lại Dashboard</span>
+    </a>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Deposit Form -->
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <div class="text-center mb-8">
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+                        <i class="fas fa-wallet text-3xl text-green-600"></i>
+                    </div>
+                    <h1 class="text-3xl font-bold text-gray-800" data-i18n="wallet.deposit">Deposit to Wallet</h1>
+                    <p class="text-gray-600 mt-2" data-i18n="wallet.depositSubtitle">Deposit USD to your wallet</p>
+                </div>
+
+                <!-- Success Alert -->
+                <div id="successAlert" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+                    <p><i class="fas fa-check-circle mr-2"></i><span data-i18n="wallet.depositSuccess">Yêu cầu nạp tiền đã được gửi! Vui lòng đợi admin xác nhận.</span></p>
+                </div>
+
+                <!-- Error Alert -->
+                <div id="errorAlert" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+                    <p id="errorMessage"></p>
+                </div>
+
+                <!-- Deposit Form -->
+                <form id="depositForm" class="space-y-6">
+                    <!-- Amount -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-dollar-sign mr-1"></i>
+                            <span data-i18n="wallet.amount">Số tiền USD</span>
+                        </label>
+                        <input
+                            type="number"
+                            id="amount"
+                            step="0.01"
+                            min="1"
+                            data-i18n-attr="placeholder"
+                            data-i18n="wallet.enterAmount"
+                            placeholder="Nhập số tiền USD"
+                            required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                    </div>
+
+                    <!-- Admin Wallet Address (Read-only) -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-wallet mr-1"></i>
+                            <span data-i18n="wallet.adminAddress">Địa chỉ ví nhận</span>
+                        </label>
+                        <div class="flex gap-2">
+                            <input
+                                type="text"
+                                id="adminAddress"
+                                readonly
+                                class="flex-1 px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-sm"
+                            >
+                            <button
+                                type="button"
+                                onclick="copyAddress()"
+                                class="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                                title="Copy Address"
+                            >
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- From Address -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-map-marker-alt mr-1"></i>
+                            <span data-i18n="wallet.fromAddress">Địa chỉ ví gửi của bạn (Tùy chọn)</span>
+                        </label>
+                        <input
+                            type="text"
+                            id="fromAddress"
+                            data-i18n-attr="placeholder"
+                            data-i18n="wallet.fromAddressPlaceholder"
+                            placeholder="Địa chỉ ví của bạn"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                    </div>
+
+                    <!-- Transaction Hash -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-hashtag mr-1"></i>
+                            <span data-i18n="wallet.txHash">Transaction Hash</span> *
+                        </label>
+                        <input
+                            type="text"
+                            id="txHash"
+                            data-i18n-attr="placeholder"
+                            data-i18n="wallet.enterTxHash"
+                            placeholder="Mã hash giao dịch sau khi chuyển tiền"
+                            required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                        <p class="mt-2 text-sm text-gray-500">
+                            <span data-i18n="wallet.txHashHint">Nhập transaction hash sau khi bạn đã chuyển tiền</span>
+                        </p>
+                    </div>
+
+                    <!-- Instructions -->
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <p class="font-semibold text-blue-800 mb-2">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            <span data-i18n="wallet.instructions">Hướng dẫn nạp tiền:</span>
+                        </p>
+                        <ol class="list-decimal list-inside text-sm text-blue-700 space-y-1">
+                            <li data-i18n="wallet.step1">Copy địa chỉ ví nhận ở trên</li>
+                            <li data-i18n="wallet.step2">Chuyển tiền USD đến địa chỉ đã copy</li>
+                            <li data-i18n="wallet.step3">Sau khi chuyển xong, copy Transaction Hash</li>
+                            <li data-i18n="wallet.step4">Paste Transaction Hash vào form và submit</li>
+                            <li data-i18n="wallet.step5">Đợi admin xác nhận (thường trong 5-30 phút)</li>
+                        </ol>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button
+                        type="submit"
+                        class="w-full px-6 py-4 bg-gradient-to-r from-green-600 to-blue-600 text-white font-bold text-lg rounded-lg hover:from-green-700 hover:to-blue-700 transition transform hover:scale-105"
+                    >
+                        <i class="fas fa-paper-plane mr-2"></i>
+                        <span data-i18n="wallet.submitDeposit">Gửi yêu cầu nạp tiền</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sidebar Info -->
+        <div class="lg:col-span-1">
+            <!-- Current Balance -->
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h3 class="font-bold text-lg mb-4">
+                    <i class="fas fa-wallet text-green-600 mr-2"></i>
+                    <span data-i18n="wallet.currentBalance">Current Balance</span>
+                </h3>
+                <p class="text-3xl font-bold text-green-600" id="currentBalance">$0.00</p>
+            </div>
+
+            <!-- Recent Deposits -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="font-bold text-lg mb-4">
+                    <i class="fas fa-history text-blue-600 mr-2"></i>
+                    <span data-i18n="wallet.recentDeposits">Giao dịch gần đây</span>
+                </h3>
+                <a href="/wallet/deposits/" class="block text-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                    <span data-i18n="home.viewAll">Xem tất cả</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const token = localStorage.getItem('access_token');
+
+if (!token) {
+    window.location.href = '/login/';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadWalletInfo();
+    loadAdminAddress();
+
+    // Apply translations
+    if (typeof applyTranslations === 'function') {
+        applyTranslations();
+    }
+});
+
+async function loadWalletInfo() {
+    try {
+        const response = await fetch('/api/wallets/', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            document.getElementById('currentBalance').textContent = '$' + parseFloat(data.balance || 0).toFixed(2);
+        }
+    } catch (error) {
+        console.error('Error loading wallet:', error);
+    }
+}
+
+async function loadAdminAddress() {
+    try {
+        const response = await fetch('/api/wallets/admin-address/', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            document.getElementById('adminAddress').value = data.admin_address;
+        }
+    } catch (error) {
+        console.error('Error loading admin address:', error);
+    }
+}
+
+function copyAddress() {
+    const addressInput = document.getElementById('adminAddress');
+    addressInput.select();
+    document.execCommand('copy');
+
+    // Show feedback
+    const btn = event.target.closest('button');
+    const originalHTML = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-check"></i>';
+    setTimeout(() => {
+        btn.innerHTML = originalHTML;
+    }, 2000);
+}
+
+document.getElementById('depositForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const formData = {
+        amount: parseFloat(document.getElementById('amount').value),
+        from_address: document.getElementById('fromAddress').value,
+        transaction_hash: document.getElementById('txHash').value
+    };
+
+    const errorAlert = document.getElementById('errorAlert');
+    const successAlert = document.getElementById('successAlert');
+    const errorMessage = document.getElementById('errorMessage');
+
+    errorAlert.classList.add('hidden');
+    successAlert.classList.add('hidden');
+
+    try {
+        const response = await fetch('/api/wallets/deposits/create/', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            successAlert.classList.remove('hidden');
+            document.getElementById('depositForm').reset();
+            setTimeout(() => {
+                window.location.href = '/wallet/deposits/';
+            }, 2000);
+        } else {
+            errorAlert.classList.remove('hidden');
+            errorMessage.textContent = data.detail || t('wallet.depositError', 'Có lỗi xảy ra. Vui lòng thử lại.');
+        }
+    } catch (error) {
+        errorAlert.classList.remove('hidden');
+        errorMessage.textContent = t('common.error', 'Có lỗi xảy ra. Vui lòng thử lại.');
+    }
+});
+
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD'
+    }).format(amount);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,492 @@
+{% extends 'base.html' %}
+
+{% block title %}Chi tiết đơn hàng - Game TopUp{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Back Button -->
+    <a href="/dashboard/" class="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6">
+        <i class="fas fa-arrow-left mr-2"></i>
+        <span data-i18n="order.backToDashboard">Quay lại Dashboard</span>
+    </a>
+
+    <!-- Order Detail Card -->
+    <div class="bg-white rounded-lg shadow-lg p-8">
+        <div class="flex justify-between items-start mb-6">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">
+                    <i class="fas fa-receipt text-blue-600 mr-2"></i>
+                    <span data-i18n="order.detail">Chi tiết đơn hàng</span>
+                </h1>
+                <p class="text-gray-600"><span data-i18n="order.orderId">Mã đơn</span>: <span id="orderIdDisplay" class="font-semibold"></span></p>
+            </div>
+            <div id="orderStatus" class="px-4 py-2 rounded-full text-sm font-semibold">
+                <!-- Status will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Order Info -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- Game Info -->
+            <div class="border-l-4 border-blue-500 pl-4">
+                <h3 class="text-lg font-bold text-gray-800 mb-3">
+                    <i class="fas fa-gamepad mr-2 text-blue-600"></i>
+                    <span data-i18n="order.gameInfo">Thông tin game</span>
+                </h3>
+                <div class="space-y-2">
+                    <div class="flex items-center">
+                        <img id="gameImage" src="" alt="Game" class="w-16 h-16 rounded-lg mr-4">
+                        <div>
+                            <p class="font-semibold text-lg" id="gameName"></p>
+                            <p class="text-sm text-gray-600" id="packageName"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Info -->
+            <div class="border-l-4 border-purple-500 pl-4">
+                <h3 class="text-lg font-bold text-gray-800 mb-3">
+                    <i class="fas fa-user mr-2 text-purple-600"></i>
+                    <span data-i18n="order.accountInfo">Thông tin tài khoản</span>
+                </h3>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600" data-i18n="order.uid">UID:</span>
+                        <span class="font-semibold" id="gameUid"></span>
+                    </div>
+                    <div class="flex justify-between" id="usernameRow">
+                        <span class="text-gray-600">Username:</span>
+                        <span class="font-semibold" id="gameUsername"></span>
+                    </div>
+                    <div class="flex justify-between" id="serverRow">
+                        <span class="text-gray-600" data-i18n="order.server">Server:</span>
+                        <span class="font-semibold" id="serverName"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Info -->
+        <div class="border-t border-gray-200 pt-6 mb-8">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">
+                <i class="fas fa-credit-card mr-2 text-green-600"></i>
+                <span data-i18n="order.paymentInfo">Thông tin thanh toán</span>
+            </h3>
+            <div class="bg-gray-50 rounded-lg p-4 space-y-3">
+                <div class="flex justify-between">
+                    <span class="text-gray-600" data-i18n="order.topupValue">Giá trị nạp:</span>
+                    <span class="font-semibold" id="orderAmount"></span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600" data-i18n="order.total">Tổng tiền:</span>
+                    <span class="text-xl font-bold text-gray-800" id="orderPrice"></span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600" data-i18n="order.method">Phương thức thanh toán:</span>
+                    <span class="font-semibold" id="paymentMethod"></span>
+                </div>
+                <div class="flex justify-between" id="txHashRow" style="display: none;">
+                    <span class="text-gray-600" data-i18n="order.txHash">Transaction Hash:</span>
+                    <span class="font-mono text-xs" id="txHash"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer Note -->
+        <div class="border-t border-gray-200 pt-6 mb-8" id="customerNoteSection" style="display: none;">
+            <h3 class="text-lg font-bold text-gray-800 mb-3">
+                <i class="fas fa-comment mr-2 text-blue-600"></i>
+                <span data-i18n="order.customerNote">Ghi chú của bạn</span>
+            </h3>
+            <p class="text-gray-700 bg-blue-50 p-4 rounded-lg" id="customerNote"></p>
+        </div>
+
+        <!-- Admin Note -->
+        <div class="border-t border-gray-200 pt-6 mb-8" id="adminNoteSection" style="display: none;">
+            <h3 class="text-lg font-bold text-gray-800 mb-3">
+                <i class="fas fa-user-shield mr-2 text-red-600"></i>
+                <span data-i18n="order.adminNote">Ghi chú từ Admin</span>
+            </h3>
+            <p class="text-gray-700 bg-red-50 p-4 rounded-lg" id="adminNote"></p>
+        </div>
+
+        <!-- Order Timeline -->
+        <div class="border-t border-gray-200 pt-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">
+                <i class="fas fa-history mr-2 text-gray-600"></i>
+                <span data-i18n="order.orderHistory">Lịch sử đơn hàng</span>
+            </h3>
+            <div id="statusLogs" class="space-y-4">
+                <!-- Status logs will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="border-t border-gray-200 pt-6 mt-8 flex justify-between" id="actionButtons">
+            <button onclick="cancelOrder()" id="cancelBtn" class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition" style="display: none;">
+                <i class="fas fa-times mr-2"></i>
+                <span data-i18n="order.cancelOrder">Hủy đơn hàng</span>
+            </button>
+            <button onclick="proceedToPayment()" id="paymentBtn" class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition" style="display: none;">
+                <i class="fas fa-credit-card mr-2"></i>
+                <span data-i18n="order.payNow">Thanh toán ngay</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Payment Modal -->
+<div id="paymentModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+        <h2 class="text-2xl font-bold mb-6">
+            <i class="fas fa-credit-card mr-2 text-blue-600"></i>
+            <span data-i18n="order.paymentModal.title">Thanh toán đơn hàng</span>
+        </h2>
+
+        <form id="paymentForm">
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    <span data-i18n="order.paymentModal.selectMethod">Chọn phương thức thanh toán</span> *
+                </label>
+                <div class="space-y-3">
+                    <label class="payment-option cursor-pointer">
+                        <input type="radio" name="paymentMethod" value="wallet" class="hidden">
+                        <div class="border-2 border-gray-300 rounded-lg p-4 hover:border-blue-500 transition">
+                            <div class="flex items-center">
+                                <i class="fas fa-wallet text-2xl text-blue-600 mr-3"></i>
+                                <div>
+                                    <p class="font-semibold" data-i18n="gameDetail.wallet">Ví nội bộ</p>
+                                    <p class="text-sm text-gray-500"><span data-i18n="gameDetail.balance">Số dư</span>: <span id="modalWalletBalance">$0.00</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                    <label class="payment-option cursor-pointer">
+                        <input type="radio" name="paymentMethod" value="crypto" class="hidden">
+                        <div class="border-2 border-gray-300 rounded-lg p-4 hover:border-blue-500 transition">
+                            <div class="flex items-center">
+                                <i class="fab fa-bitcoin text-2xl text-yellow-600 mr-3"></i>
+                                <div>
+                                    <p class="font-semibold" data-i18n="gameDetail.crypto">Crypto</p>
+                                    <p class="text-sm text-gray-500">USDT TRC20</p>
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div id="cryptoHashSection" class="mb-6 hidden">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    <span data-i18n="order.paymentModal.txHashOptional">Transaction Hash (Tùy chọn)</span>
+                </label>
+                <input
+                    type="text"
+                    id="transactionHash"
+                    data-i18n-attr="placeholder"
+                    data-i18n="order.paymentModal.enterTxHash"
+                    placeholder="Nhập transaction hash..."
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+            </div>
+
+            <div class="flex space-x-3">
+                <button type="button" onclick="closePaymentModal()" class="flex-1 px-4 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition">
+                    <span data-i18n="common.cancel">Hủy</span>
+                </button>
+                <button type="submit" class="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                    <span data-i18n="order.paymentModal.confirm">Xác nhận thanh toán</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+const orderId = '{{ order_id }}';
+let orderData = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+        alert('Vui lòng đăng nhập để xem đơn hàng');
+        window.location.href = '/login/';
+        return;
+    }
+
+    loadOrderDetail();
+    loadWalletBalance();
+
+    // Payment method selection in modal
+    document.querySelectorAll('.payment-option').forEach(label => {
+        label.addEventListener('click', function() {
+            document.querySelectorAll('.payment-option div').forEach(div => {
+                div.classList.remove('border-blue-500', 'bg-blue-50');
+            });
+            this.querySelector('div').classList.add('border-blue-500', 'bg-blue-50');
+
+            // Show crypto hash input if crypto is selected
+            const method = this.querySelector('input').value;
+            if (method === 'crypto') {
+                document.getElementById('cryptoHashSection').classList.remove('hidden');
+            } else {
+                document.getElementById('cryptoHashSection').classList.add('hidden');
+            }
+        });
+    });
+
+    // Payment form submission
+    document.getElementById('paymentForm').addEventListener('submit', handlePayment);
+});
+
+function loadOrderDetail() {
+    const token = localStorage.getItem('access_token');
+
+    fetch(`/api/orders/${orderId}/`, {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Order not found');
+        }
+        return response.json();
+    })
+    .then(order => {
+        orderData = order;
+        displayOrderDetail(order);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Không thể tải thông tin đơn hàng');
+        window.location.href = '/dashboard/';
+    });
+}
+
+function displayOrderDetail(order) {
+    // Order ID
+    document.getElementById('orderIdDisplay').textContent = order.order_id;
+
+    // Status
+    const statusColors = {
+        'pending_payment': 'bg-yellow-100 text-yellow-800',
+        'paid': 'bg-blue-100 text-blue-800',
+        'processing': 'bg-purple-100 text-purple-800',
+        'completed': 'bg-green-100 text-green-800',
+        'canceled': 'bg-gray-100 text-gray-800',
+        'refunded': 'bg-red-100 text-red-800'
+    };
+
+    const statusTexts = {
+        'pending_payment': 'Chờ thanh toán',
+        'paid': 'Đã thanh toán',
+        'processing': 'Đang xử lý',
+        'completed': 'Hoàn thành',
+        'canceled': 'Đã hủy',
+        'refunded': 'Đã hoàn tiền'
+    };
+
+    const statusEl = document.getElementById('orderStatus');
+    statusEl.className = `px-4 py-2 rounded-full text-sm font-semibold ${statusColors[order.status]}`;
+    statusEl.textContent = statusTexts[order.status];
+
+    // Game info
+    document.getElementById('gameImage').src = order.game_image;
+    document.getElementById('gameName').textContent = order.game_name;
+
+    if (order.package_name) {
+        document.getElementById('packageName').textContent = order.package_name;
+    } else {
+        document.getElementById('packageName').style.display = 'none';
+    }
+
+    // Account info
+    document.getElementById('gameUid').textContent = order.game_uid;
+
+    if (order.game_username) {
+        document.getElementById('gameUsername').textContent = order.game_username;
+    } else {
+        document.getElementById('usernameRow').style.display = 'none';
+    }
+
+    if (order.server_name) {
+        document.getElementById('serverName').textContent = order.server_name;
+    } else {
+        document.getElementById('serverRow').style.display = 'none';
+    }
+
+    // Payment info
+    document.getElementById('orderAmount').textContent = formatCurrency(order.amount);
+    document.getElementById('orderPrice').textContent = formatCurrency(order.price);
+
+    const paymentMethods = {
+        'wallet': 'Ví nội bộ',
+        'crypto': 'Crypto (USDT TRC20)',
+        '': 'Chưa chọn'
+    };
+    document.getElementById('paymentMethod').textContent = paymentMethods[order.payment_method || ''];
+
+    // Customer note
+    if (order.customer_note) {
+        document.getElementById('customerNote').textContent = order.customer_note;
+        document.getElementById('customerNoteSection').style.display = 'block';
+    }
+
+    // Admin note
+    if (order.admin_note) {
+        document.getElementById('adminNote').textContent = order.admin_note;
+        document.getElementById('adminNoteSection').style.display = 'block';
+    }
+
+    // Status logs
+    if (order.status_logs && order.status_logs.length > 0) {
+        displayStatusLogs(order.status_logs);
+    }
+
+    // Action buttons
+    if (order.status === 'pending_payment') {
+        document.getElementById('cancelBtn').style.display = 'block';
+        document.getElementById('paymentBtn').style.display = 'block';
+    }
+}
+
+function displayStatusLogs(logs) {
+    const container = document.getElementById('statusLogs');
+    container.innerHTML = '';
+
+    logs.forEach((log, index) => {
+        const div = document.createElement('div');
+        div.className = 'flex items-start';
+        div.innerHTML = `
+            <div class="flex-shrink-0 w-2 h-2 mt-2 rounded-full ${index === 0 ? 'bg-blue-500' : 'bg-gray-300'}"></div>
+            <div class="ml-4 flex-1">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="font-semibold text-gray-800">${getStatusText(log.new_status)}</p>
+                        <p class="text-sm text-gray-600">${log.note}</p>
+                        ${log.changed_by_email ? `<p class="text-xs text-gray-500">Bởi: ${log.changed_by_email}</p>` : ''}
+                    </div>
+                    <p class="text-xs text-gray-500">${new Date(log.created_at).toLocaleString('vi-VN')}</p>
+                </div>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+}
+
+function getStatusText(status) {
+    const statusTexts = {
+        'pending_payment': 'Chờ thanh toán',
+        'paid': 'Đã thanh toán',
+        'processing': 'Đang xử lý',
+        'completed': 'Hoàn thành',
+        'canceled': 'Đã hủy',
+        'refunded': 'Đã hoàn tiền'
+    };
+    return statusTexts[status] || status;
+}
+
+function loadWalletBalance() {
+    const token = localStorage.getItem('access_token');
+
+    fetch('/api/wallets/', {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('modalWalletBalance').textContent = formatCurrency(data.balance);
+    })
+    .catch(error => console.error('Error loading wallet:', error));
+}
+
+function proceedToPayment() {
+    document.getElementById('paymentModal').classList.remove('hidden');
+}
+
+function closePaymentModal() {
+    document.getElementById('paymentModal').classList.add('hidden');
+}
+
+function handlePayment(e) {
+    e.preventDefault();
+
+    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value;
+    if (!paymentMethod) {
+        alert('Vui lòng chọn phương thức thanh toán');
+        return;
+    }
+
+    const token = localStorage.getItem('access_token');
+    const formData = {
+        payment_method: paymentMethod
+    };
+
+    if (paymentMethod === 'crypto') {
+        formData.transaction_hash = document.getElementById('transactionHash').value;
+    }
+
+    fetch(`/api/orders/${orderId}/payment/`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            alert(data.message);
+            closePaymentModal();
+            loadOrderDetail(); // Reload order detail
+        } else if (data.error) {
+            alert(data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Có lỗi xảy ra khi thanh toán');
+    });
+}
+
+function cancelOrder() {
+    if (!confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) {
+        return;
+    }
+
+    const token = localStorage.getItem('access_token');
+
+    fetch(`/api/orders/${orderId}/cancel/`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            alert(data.message);
+            loadOrderDetail(); // Reload order detail
+        } else if (data.error) {
+            alert(data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Có lỗi xảy ra khi hủy đơn hàng');
+    });
+}
+
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD'
+    }).format(amount);
+}
+</script>
+{% endblock %}

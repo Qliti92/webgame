@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+
+{% block title %}Danh sách Game - Game TopUp{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-4xl font-bold text-gray-800 mb-2">
+            <i class="fas fa-gamepad text-blue-600"></i>
+            <span data-i18n="games.title">Chọn Game để Nạp</span>
+        </h1>
+        <p class="text-gray-600" data-i18n="games.subtitle">Chọn game bạn muốn nạp và tiếp tục đến trang thanh toán</p>
+    </div>
+
+    <!-- Search & Filter -->
+    <div class="mb-8 bg-white rounded-lg shadow-md p-6">
+        <div class="flex flex-col md:flex-row gap-4">
+            <input
+                type="text"
+                id="searchGame"
+                data-i18n-attr="placeholder"
+                data-i18n="games.search"
+                placeholder="Tìm kiếm game..."
+                class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+            <button class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                <i class="fas fa-search mr-2"></i>
+                <span data-i18n="common.search">Tìm kiếm</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Games Grid -->
+    <div id="gamesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <!-- Games will be loaded here -->
+        <div class="text-center py-12 col-span-full">
+            <i class="fas fa-spinner fa-spin text-4xl text-gray-400 mb-4"></i>
+            <p class="text-gray-500" data-i18n="common.loading">Đang tải danh sách game...</p>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="hidden text-center py-12">
+        <i class="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
+        <p class="text-gray-500 text-xl" data-i18n="games.noGames">Chưa có game nào</p>
+        <p class="text-gray-400 mt-2" data-i18n="games.comeBackLater">Vui lòng quay lại sau</p>
+    </div>
+</div>
+
+<!-- Game Card Template -->
+<template id="gameCardTemplate">
+    <div class="game-card bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+        <div class="relative">
+            <img class="game-image w-full h-48 object-cover" src="" alt="">
+            <div class="game-status absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-semibold">
+                <i class="fas fa-circle mr-1"></i>
+                <span class="game-status-text"></span>
+            </div>
+        </div>
+        <div class="p-6">
+            <h3 class="game-name text-xl font-bold text-gray-800 mb-2"></h3>
+            <p class="game-description text-gray-600 text-sm mb-4 line-clamp-2"></p>
+            <div class="flex items-center justify-between mb-4">
+                <div class="text-sm text-gray-500">
+                    <i class="fas fa-coins text-yellow-500 mr-1"></i>
+                    <span class="game-min-amount"></span> - <span class="game-max-amount"></span>
+                </div>
+            </div>
+            <a href="#" class="game-link block w-full text-center px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-600 hover:to-purple-700 transition">
+                <i class="fas fa-shopping-cart mr-2"></i>
+                <span data-i18n="games.topup">Nạp ngay</span>
+            </a>
+        </div>
+    </div>
+</template>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadGames();
+});
+
+function loadGames() {
+    fetch('/api/games/')
+        .then(response => response.json())
+        .then(data => {
+            const gamesGrid = document.getElementById('gamesGrid');
+            const emptyState = document.getElementById('emptyState');
+            const template = document.getElementById('gameCardTemplate');
+
+            gamesGrid.innerHTML = '';
+
+            if (data.results && data.results.length > 0) {
+                emptyState.classList.add('hidden');
+
+                data.results.forEach(game => {
+                    const card = template.content.cloneNode(true);
+
+                    // Set image
+                    const img = card.querySelector('.game-image');
+                    img.src = game.image || '/static/images/game-placeholder.png';
+                    img.alt = game.name;
+
+                    // Set status
+                    const statusDiv = card.querySelector('.game-status');
+                    const statusText = card.querySelector('.game-status-text');
+                    if (game.status === 'active') {
+                        statusDiv.classList.add('bg-green-500', 'text-white');
+                        statusText.textContent = t('games.active', 'Hoạt động');
+                    } else if (game.status === 'maintenance') {
+                        statusDiv.classList.add('bg-yellow-500', 'text-white');
+                        statusText.textContent = t('games.maintenance', 'Bảo trì');
+                    } else {
+                        statusDiv.classList.add('bg-gray-500', 'text-white');
+                        statusText.textContent = t('games.inactive', 'Tạm dừng');
+                    }
+
+                    // Set game info
+                    card.querySelector('.game-name').textContent = game.name;
+                    card.querySelector('.game-description').textContent = game.description;
+                    card.querySelector('.game-min-amount').textContent = formatCurrency(game.min_amount);
+                    card.querySelector('.game-max-amount').textContent = formatCurrency(game.max_amount);
+
+                    // Set link
+                    const link = card.querySelector('.game-link');
+                    if (game.status === 'active') {
+                        link.href = '/games/' + game.slug + '/';
+                    } else {
+                        link.classList.add('opacity-50', 'cursor-not-allowed');
+                        link.onclick = (e) => {
+                            e.preventDefault();
+                            const statusMsg = game.status === 'maintenance' ? t('games.maintenance', 'bảo trì') : t('games.inactive', 'tạm dừng');
+                            alert(t('games.gameUnavailable', 'Game đang ') + statusMsg);
+                        };
+                    }
+
+                    gamesGrid.appendChild(card);
+                });
+            } else {
+                emptyState.classList.remove('hidden');
+            }
+        })
+        .catch(error => {
+            console.error('Error loading games:', error);
+            document.getElementById('gamesGrid').innerHTML = `
+                <div class="col-span-full text-center py-12">
+                    <i class="fas fa-exclamation-triangle text-4xl text-red-400 mb-4"></i>
+                    <p class="text-gray-500">${t('games.loadError', 'Không thể tải danh sách game')}</p>
+                    <button onclick="loadGames()" class="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        ${t('games.retry', 'Thử lại')}
+                    </button>
+                </div>
+            `;
+        });
+}
+
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD'
+    }).format(amount);
+}
+
+// Search functionality
+document.getElementById('searchGame')?.addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const gameCards = document.querySelectorAll('.game-card');
+
+    gameCards.forEach(card => {
+        const gameName = card.querySelector('.game-name').textContent.toLowerCase();
+        const gameDesc = card.querySelector('.game-description').textContent.toLowerCase();
+
+        if (gameName.includes(searchTerm) || gameDesc.includes(searchTerm)) {
+            card.style.display = '';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+});
+</script>
+
+<style>
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+</style>
+{% endblock %}
