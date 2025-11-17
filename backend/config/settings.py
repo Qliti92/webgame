@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 from datetime import timedelta
 from decouple import config
-# import dj_database_url  # Not needed for SQLite
+import dj_database_url
 
 # Build paths
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,9 +31,9 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'django_filters',
-    # 'drf_spectacular',  # Disabled for quick start
-    # 'django_celery_beat',  # Disabled for quick start
-    # 'django_celery_results',  # Disabled for quick start
+    'drf_spectacular',  # API documentation
+    'django_celery_beat',  # Celery beat for periodic tasks
+    'django_celery_results',  # Store celery task results
 
     # Local apps
     'apps.core',
@@ -45,7 +45,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    # 'whitenoise.middleware.WhiteNoiseMiddleware',  # Disabled for quick start
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Serve static files
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',  # For multi-language support
@@ -77,13 +77,26 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
-# Using SQLite for development (no PostgreSQL needed)
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Using PostgreSQL for production (Docker) and SQLite for local development
+import dj_database_url
+
+if config('DATABASE_URL', default=''):
+    # Production: Use PostgreSQL from DATABASE_URL
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=config('DATABASE_URL'),
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
     }
-}
+else:
+    # Development: Use SQLite
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # Custom User Model
 AUTH_USER_MODEL = 'users.User'
@@ -139,7 +152,10 @@ LOCALE_PATHS = [
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR.parent / 'frontend' / 'static']
-# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'  # Disabled for development
+
+# Use Whitenoise for serving static files in production
+if not DEBUG:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files
 MEDIA_URL = '/media/'
@@ -163,7 +179,7 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,
-    # 'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',  # Disabled for quick start
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 # JWT Settings
