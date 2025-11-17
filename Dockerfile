@@ -24,5 +24,6 @@ RUN pip install --upgrade pip && \
     pip install -r requirements.txt
 
 COPY backend/ /app/
+COPY frontend/ /app/frontend/
 
 RUN mkdir -p /app/staticfiles /app/media
