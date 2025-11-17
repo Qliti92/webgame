@@ -7,8 +7,16 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y \
     gcc \
+    g++ \
+    make \
     postgresql-client \
     libpq-dev \
+    python3-dev \
+    build-essential \
+    libssl-dev \
+    libffi-dev \
+    libjpeg-dev \
+    zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
 
 COPY backend/requirements.txt /app/

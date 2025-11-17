@@ -80,11 +80,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Using PostgreSQL for production (Docker) and SQLite for local development
 import dj_database_url
 
-if config('DATABASE_URL', default=''):
+DATABASE_URL = config('DATABASE_URL', default='')
+if DATABASE_URL and DATABASE_URL.strip():
     # Production: Use PostgreSQL from DATABASE_URL
     DATABASES = {
         'default': dj_database_url.config(
-            default=config('DATABASE_URL'),
+            default=DATABASE_URL,
             conn_max_age=600,
             conn_health_checks=True,
         )
