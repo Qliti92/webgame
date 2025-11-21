@@ -1,107 +1,167 @@
 {% extends 'base.html' %}
 
-{% block title %}Dashboard - Game TopUp{% endblock %}
+{% block title %}Dashboard - TOPUPGAMEMOBILE{% endblock %}
+
+{% block meta_description %}Manage your game top-ups, wallet balance, orders and transactions from your personal dashboard.{% endblock %}
 
 {% block content %}
 <div class="max-w-7xl mx-auto">
-    <!-- User Info Header -->
-    <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg shadow-lg p-8 text-white mb-8">
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-3xl font-bold mb-2">
-                    <i class="fas fa-user-circle mr-2"></i>
-                    <span data-i18n="dashboard.hello">Hello</span>, <span id="userName">User</span>!
+    <!-- User Header -->
+    <div class="card p-6 md:p-8 mb-8 bg-gradient-to-r from-primary-600/20 to-pink-600/20 border-primary-500/30">
+        <div class="flex flex-col sm:flex-row items-center justify-between">
+            <div class="text-center sm:text-left mb-4 sm:mb-0">
+                <h1 class="text-2xl md:text-3xl font-bold text-white mb-1">
+                    <i class="fas fa-user-circle mr-2 text-primary-400"></i>
+                    Hello, <span id="userName">User</span>!
                 </h1>
-                <p class="text-blue-100" id="userEmail"></p>
+                <p class="text-dark-400" id="userEmail"></p>
             </div>
-            <button onclick="logout()" class="px-6 py-3 bg-white text-blue-600 rounded-lg font-semibold hover:bg-gray-100 transition">
-                <i class="fas fa-sign-out-alt mr-2"></i>
-                <span data-i18n="nav.logout">Logout</span>
-            </button>
+            <div class="flex space-x-3">
+                <a href="/profile/" class="btn btn-secondary text-sm">
+                    <i class="fas fa-cog mr-2"></i>Settings
+                </a>
+                <button onclick="logout()" class="btn btn-outline text-sm border-red-500 text-red-400 hover:bg-red-500 hover:text-white">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                </button>
+            </div>
         </div>
     </div>
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <!-- Wallet Balance -->
-        <div class="bg-white rounded-lg shadow-lg p-6">
-            <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center">
-                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                        <i class="fas fa-wallet text-2xl text-green-600"></i>
-                    </div>
-                    <div>
-                        <p class="text-gray-600 text-sm" data-i18n="dashboard.walletBalance">Wallet Balance</p>
-                        <p class="text-2xl font-bold text-gray-800" id="walletBalance">$0.00</p>
-                    </div>
+        <div class="card p-6">
+            <div class="flex items-center mb-4">
+                <div class="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center mr-4">
+                    <i class="fas fa-wallet text-2xl text-green-400"></i>
+                </div>
+                <div>
+                    <p class="text-dark-400 text-sm">Wallet Balance</p>
+                    <p class="text-2xl font-bold text-white" id="walletBalance">$0.00</p>
                 </div>
             </div>
-            <a href="/wallet/deposit/" class="block text-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-                <i class="fas fa-plus mr-2"></i>
-                <span data-i18n="dashboard.depositMoney">Deposit Money</span>
+            <a href="/wallet/deposit/" class="btn btn-success w-full text-sm">
+                <i class="fas fa-plus mr-2"></i>Deposit
             </a>
         </div>
 
         <!-- Total Orders -->
-        <div class="bg-white rounded-lg shadow-lg p-6">
+        <div class="card p-6">
             <div class="flex items-center">
-                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                    <i class="fas fa-shopping-cart text-2xl text-blue-600"></i>
+                <div class="w-12 h-12 bg-primary-500/20 rounded-xl flex items-center justify-center mr-4">
+                    <i class="fas fa-shopping-cart text-2xl text-primary-400"></i>
                 </div>
                 <div>
-                    <p class="text-gray-600 text-sm" data-i18n="dashboard.totalOrders">Total Orders</p>
-                    <p class="text-2xl font-bold text-gray-800" id="totalOrders">0</p>
+                    <p class="text-dark-400 text-sm">Total Orders</p>
+                    <p class="text-2xl font-bold text-white" id="totalOrders">0</p>
                 </div>
             </div>
         </div>
 
         <!-- Pending Orders -->
-        <div class="bg-white rounded-lg shadow-lg p-6">
+        <div class="card p-6">
             <div class="flex items-center">
-                <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mr-3">
-                    <i class="fas fa-clock text-2xl text-yellow-600"></i>
+                <div class="w-12 h-12 bg-yellow-500/20 rounded-xl flex items-center justify-center mr-4">
+                    <i class="fas fa-clock text-2xl text-yellow-400"></i>
                 </div>
                 <div>
-                    <p class="text-gray-600 text-sm" data-i18n="dashboard.pendingOrders">Pending Orders</p>
-                    <p class="text-2xl font-bold text-gray-800" id="pendingOrders">0</p>
+                    <p class="text-dark-400 text-sm">Pending Orders</p>
+                    <p class="text-2xl font-bold text-white" id="pendingOrders">0</p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Tabs -->
-    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-        <!-- Tab Headers -->
-        <div class="border-b border-gray-200">
+    <div class="card overflow-hidden">
+        <div class="border-b border-dark-700">
             <div class="flex">
-                <button onclick="switchTab('orders')" id="ordersTab" class="tab-button px-6 py-4 font-semibold border-b-2 border-blue-600 text-blue-600">
-                    <i class="fas fa-shopping-cart mr-2"></i>
-                    <span data-i18n="dashboard.orders">Đơn hàng</span>
+                <button onclick="switchTab('orders')" id="ordersTab" class="tab-btn px-6 py-4 font-semibold border-b-2 border-primary-500 text-primary-400">
+                    <i class="fas fa-shopping-cart mr-2"></i>Orders
                 </button>
-                <button onclick="switchTab('transactions')" id="transactionsTab" class="tab-button px-6 py-4 font-semibold text-gray-600 hover:text-gray-800">
-                    <i class="fas fa-history mr-2"></i>
-                    <span data-i18n="dashboard.transactions">Lịch sử giao dịch</span>
+                <button onclick="switchTab('transactions')" id="transactionsTab" class="tab-btn px-6 py-4 font-semibold text-dark-400 hover:text-white border-b-2 border-transparent">
+                    <i class="fas fa-history mr-2"></i>Transactions
                 </button>
             </div>
         </div>
 
-        <!-- Tab Content -->
-        <div class="p-6">
-            <!-- Orders Tab -->
-            <div id="ordersContent">
-                <div id="ordersList" class="space-y-4">
-                    <!-- Orders will be loaded here -->
-                    <div class="text-center py-8">
-                        <i class="fas fa-spinner fa-spin text-3xl text-gray-400"></i>
-                        <p class="text-gray-500 mt-2" data-i18n="common.loading">Đang tải...</p>
-                    </div>
+        <!-- Orders Tab -->
+        <div id="ordersContent">
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-dark-800">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-dark-400 uppercase">Order ID</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-dark-400 uppercase">Game</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-dark-400 uppercase">Amount</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-dark-400 uppercase">Status</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-dark-400 uppercase">Date</th>
+                            <th class="px-4 py-3 text-right text-xs font-semibold text-dark-400 uppercase">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersList" class="divide-y divide-dark-700">
+                        <tr>
+                            <td colspan="6" class="px-4 py-8 text-center text-dark-400">
+                                <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-500 mx-auto mb-3"></div>
+                                Loading orders...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Orders Pagination -->
+            <div class="flex justify-between items-center p-4 border-t border-dark-700">
+                <p class="text-sm text-dark-400">
+                    Page <span id="currentOrderPage">1</span> of <span id="totalOrderPages">1</span>
+                    (<span id="totalOrderCount">0</span> orders)
+                </p>
+                <div class="flex gap-2">
+                    <button onclick="loadOrders(currentOrderPage - 1)" id="prevOrderBtn" class="btn btn-sm btn-outline" disabled>
+                        <i class="fas fa-chevron-left mr-1"></i>Previous
+                    </button>
+                    <button onclick="loadOrders(currentOrderPage + 1)" id="nextOrderBtn" class="btn btn-sm btn-outline" disabled>
+                        Next<i class="fas fa-chevron-right ml-1"></i>
+                    </button>
                 </div>
             </div>
+        </div>
 
-            <!-- Transactions Tab -->
-            <div id="transactionsContent" class="hidden">
-                <div id="transactionsList" class="space-y-4">
-                    <!-- Transactions will be loaded here -->
+        <!-- Transactions Tab -->
+        <div id="transactionsContent" class="hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-dark-800">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-dark-400 uppercase">Description</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-dark-400 uppercase">Type</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-dark-400 uppercase">Amount</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-dark-400 uppercase">Balance</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-dark-400 uppercase">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionsList" class="divide-y divide-dark-700">
+                        <tr>
+                            <td colspan="5" class="px-4 py-8 text-center text-dark-400">
+                                <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-500 mx-auto mb-3"></div>
+                                Loading transactions...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Transactions Pagination -->
+            <div class="flex justify-between items-center p-4 border-t border-dark-700">
+                <p class="text-sm text-dark-400">
+                    Page <span id="currentTxPage">1</span> of <span id="totalTxPages">1</span>
+                    (<span id="totalTxCount">0</span> transactions)
+                </p>
+                <div class="flex gap-2">
+                    <button onclick="loadTransactions(currentTxPage - 1)" id="prevTxBtn" class="btn btn-sm btn-outline" disabled>
+                        <i class="fas fa-chevron-left mr-1"></i>Previous
+                    </button>
+                    <button onclick="loadTransactions(currentTxPage + 1)" id="nextTxBtn" class="btn btn-sm btn-outline" disabled>
+                        Next<i class="fas fa-chevron-right ml-1"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -115,72 +175,82 @@ if (!token) {
     window.location.href = '/login/';
 }
 
+// Pagination state
+let currentOrderPage = 1;
+let totalOrderPages = 1;
+let currentTxPage = 1;
+let totalTxPages = 1;
+
 document.addEventListener('DOMContentLoaded', function() {
     loadUserInfo();
     loadWalletInfo();
-    loadOrders();
-    loadTransactions();
-
-    // Apply translations
-    if (typeof applyTranslations === 'function') {
-        applyTranslations();
-    }
+    loadOrders(1);
+    loadTransactions(1);
 });
 
 async function loadUserInfo() {
     try {
         const response = await fetch('/api/users/profile/', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
+            headers: { 'Authorization': `Bearer ${token}` }
         });
-
         if (response.ok) {
             const data = await response.json();
             document.getElementById('userName').textContent = data.username;
             document.getElementById('userEmail').textContent = data.email;
         }
     } catch (error) {
-        console.error('Error loading user info:', error);
+        console.error('Error:', error);
     }
 }
 
 async function loadWalletInfo() {
     try {
         const response = await fetch('/api/wallets/', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
+            headers: { 'Authorization': `Bearer ${token}` }
         });
-
         if (response.ok) {
             const data = await response.json();
             document.getElementById('walletBalance').textContent = formatCurrency(data.balance);
         }
     } catch (error) {
-        console.error('Error loading wallet:', error);
+        console.error('Error:', error);
     }
 }
 
-async function loadOrders() {
-    try {
-        const response = await fetch('/api/orders/', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
+async function loadOrders(page = 1) {
+    if (page < 1) return;
 
+    try {
+        const response = await fetch(`/api/orders/?page=${page}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
         if (response.ok) {
             const data = await response.json();
-            document.getElementById('totalOrders').textContent = data.count || data.results.length;
+            const totalCount = data.count || 0;
+            const orders = data.results || [];
 
-            const pending = data.results.filter(o => ['pending_payment', 'paid', 'processing'].includes(o.status)).length;
+            // Update stats
+            document.getElementById('totalOrders').textContent = totalCount;
+            const pending = orders.filter(o => ['pending_payment', 'paid', 'processing'].includes(o.status)).length;
             document.getElementById('pendingOrders').textContent = pending;
 
-            displayOrders(data.results);
+            // Update pagination state
+            currentOrderPage = page;
+            totalOrderPages = Math.ceil(totalCount / 20) || 1;
+
+            // Update pagination UI
+            document.getElementById('currentOrderPage').textContent = currentOrderPage;
+            document.getElementById('totalOrderPages').textContent = totalOrderPages;
+            document.getElementById('totalOrderCount').textContent = totalCount;
+
+            // Enable/disable pagination buttons
+            document.getElementById('prevOrderBtn').disabled = currentOrderPage <= 1;
+            document.getElementById('nextOrderBtn').disabled = currentOrderPage >= totalOrderPages;
+
+            displayOrders(orders);
         }
     } catch (error) {
-        console.error('Error loading orders:', error);
+        console.error('Error:', error);
     }
 }
 
@@ -190,78 +260,94 @@ function displayOrders(orders) {
 
     if (orders.length === 0) {
         container.innerHTML = `
-            <div class="text-center py-8">
-                <i class="fas fa-inbox text-4xl text-gray-300 mb-2"></i>
-                <p class="text-gray-500">${t('dashboard.noOrders', 'Chưa có đơn hàng nào')}</p>
-                <a href="/games/" class="inline-block mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                    ${t('dashboard.createNewOrder', 'Tạo đơn hàng mới')}
-                </a>
-            </div>
+            <tr>
+                <td colspan="6" class="px-4 py-12 text-center">
+                    <div class="w-16 h-16 bg-dark-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-inbox text-3xl text-dark-500"></i>
+                    </div>
+                    <p class="text-dark-400 mb-4">No orders yet</p>
+                    <a href="/games/" class="btn btn-primary">
+                        <i class="fas fa-plus mr-2"></i>Create Order
+                    </a>
+                </td>
+            </tr>
         `;
         return;
     }
 
+    const statusConfig = {
+        'pending_payment': { bg: 'bg-yellow-500/20', text: 'text-yellow-400', label: 'Pending' },
+        'paid': { bg: 'bg-blue-500/20', text: 'text-blue-400', label: 'Paid' },
+        'processing': { bg: 'bg-purple-500/20', text: 'text-purple-400', label: 'Processing' },
+        'completed': { bg: 'bg-green-500/20', text: 'text-green-400', label: 'Completed' },
+        'canceled': { bg: 'bg-dark-600', text: 'text-dark-400', label: 'Canceled' },
+        'refunded': { bg: 'bg-red-500/20', text: 'text-red-400', label: 'Refunded' }
+    };
+
     orders.forEach(order => {
-        const statusColors = {
-            'pending_payment': 'bg-yellow-100 text-yellow-800',
-            'paid': 'bg-blue-100 text-blue-800',
-            'processing': 'bg-purple-100 text-purple-800',
-            'completed': 'bg-green-100 text-green-800',
-            'canceled': 'bg-gray-100 text-gray-800',
-            'refunded': 'bg-red-100 text-red-800'
-        };
-
-        const statusTexts = {
-            'pending_payment': t('order.status.pending_payment', 'Chờ thanh toán'),
-            'paid': t('order.status.paid', 'Đã thanh toán'),
-            'processing': t('order.status.processing', 'Đang xử lý'),
-            'completed': t('order.status.completed', 'Hoàn thành'),
-            'canceled': t('order.status.canceled', 'Đã hủy'),
-            'refunded': t('order.status.refunded', 'Đã hoàn tiền')
-        };
-
-        const div = document.createElement('div');
-        div.className = 'border border-gray-200 rounded-lg p-4 hover:shadow-md transition';
-        div.innerHTML = `
-            <div class="flex justify-between items-start mb-2">
-                <div>
-                    <p class="font-semibold text-lg">${order.game_name}</p>
-                    <p class="text-sm text-gray-600">${t('dashboard.orderId', 'Mã đơn')}: ${order.order_id}</p>
-                </div>
-                <span class="px-3 py-1 rounded-full text-sm font-semibold ${statusColors[order.status]}">
-                    ${statusTexts[order.status]}
+        const status = statusConfig[order.status] || statusConfig['pending_payment'];
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-dark-800/50 transition-colors';
+        tr.innerHTML = `
+            <td class="px-4 py-3">
+                <p class="font-mono text-white text-sm">${order.order_id}</p>
+                <p class="text-xs text-dark-400">UID: ${order.game_uid || '-'}</p>
+            </td>
+            <td class="px-4 py-3">
+                <p class="text-white text-sm">${order.game_name}</p>
+                <p class="text-xs text-dark-400">${order.package_info?.name || '-'}</p>
+            </td>
+            <td class="px-4 py-3">
+                <p class="text-primary-400 font-semibold">${formatCurrency(order.price)}</p>
+            </td>
+            <td class="px-4 py-3">
+                <span class="px-2 py-1 rounded-full text-xs font-medium ${status.bg} ${status.text}">
+                    ${status.label}
                 </span>
-            </div>
-            <div class="grid grid-cols-2 gap-2 text-sm mb-3">
-                <div class="text-gray-600">${t('dashboard.amount', 'Giá trị')}:</div>
-                <div class="font-semibold text-right">${formatCurrency(order.price)}</div>
-                <div class="text-gray-600">${t('order.method', 'Phương thức')}:</div>
-                <div class="text-right">${order.payment_method === 'wallet' ? t('gameDetail.wallet', 'Ví nội bộ') : 'Crypto'}</div>
-            </div>
-            <div class="text-right">
-                <a href="/orders/${order.order_id}/" class="text-blue-600 hover:text-blue-800 font-semibold">
-                    ${t('dashboard.viewDetails', 'Chi tiết')} →
+            </td>
+            <td class="px-4 py-3">
+                <p class="text-dark-300 text-sm">${new Date(order.created_at).toLocaleDateString()}</p>
+                <p class="text-xs text-dark-500">${new Date(order.created_at).toLocaleTimeString()}</p>
+            </td>
+            <td class="px-4 py-3 text-right">
+                <a href="/orders/${order.order_id}/" class="btn btn-sm btn-primary">
+                    <i class="fas fa-eye mr-1"></i>View
                 </a>
-            </div>
+            </td>
         `;
-        container.appendChild(div);
+        container.appendChild(tr);
     });
 }
 
-async function loadTransactions() {
-    try {
-        const response = await fetch('/api/wallets/transactions/', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
+async function loadTransactions(page = 1) {
+    if (page < 1) return;
 
+    try {
+        const response = await fetch(`/api/wallets/transactions/?page=${page}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
         if (response.ok) {
             const data = await response.json();
-            displayTransactions(data.results || data);
+            const totalCount = data.count || 0;
+            const transactions = data.results || data;
+
+            // Update pagination state
+            currentTxPage = page;
+            totalTxPages = Math.ceil(totalCount / 20) || 1;
+
+            // Update pagination UI
+            document.getElementById('currentTxPage').textContent = currentTxPage;
+            document.getElementById('totalTxPages').textContent = totalTxPages;
+            document.getElementById('totalTxCount').textContent = totalCount;
+
+            // Enable/disable pagination buttons
+            document.getElementById('prevTxBtn').disabled = currentTxPage <= 1;
+            document.getElementById('nextTxBtn').disabled = currentTxPage >= totalTxPages;
+
+            displayTransactions(transactions);
         }
     } catch (error) {
-        console.error('Error loading transactions:', error);
+        console.error('Error:', error);
     }
 }
 
@@ -270,49 +356,68 @@ function displayTransactions(transactions) {
     container.innerHTML = '';
 
     if (transactions.length === 0) {
-        container.innerHTML = `<p class="text-center text-gray-500 py-8">${t('dashboard.noTransactions', 'Chưa có giao dịch nào')}</p>`;
+        container.innerHTML = `
+            <tr>
+                <td colspan="5" class="px-4 py-8 text-center text-dark-400">
+                    <i class="fas fa-inbox mr-2"></i>No transactions yet
+                </td>
+            </tr>
+        `;
         return;
     }
 
+    const typeConfig = {
+        'deposit': { bg: 'bg-green-500/20', text: 'text-green-400', label: 'Deposit' },
+        'payment': { bg: 'bg-blue-500/20', text: 'text-blue-400', label: 'Payment' },
+        'refund': { bg: 'bg-yellow-500/20', text: 'text-yellow-400', label: 'Refund' },
+        'withdrawal': { bg: 'bg-red-500/20', text: 'text-red-400', label: 'Withdrawal' }
+    };
+
     transactions.forEach(tx => {
-        const div = document.createElement('div');
-        div.className = 'border border-gray-200 rounded-lg p-4';
-        div.innerHTML = `
-            <div class="flex justify-between items-center">
-                <div>
-                    <p class="font-semibold">${tx.description}</p>
-                    <p class="text-sm text-gray-600">${new Date(tx.created_at).toLocaleString('vi-VN')}</p>
-                </div>
-                <div class="text-right">
-                    <p class="font-bold ${tx.transaction_type === 'deposit' || tx.transaction_type === 'refund' ? 'text-green-600' : 'text-red-600'}">
-                        ${tx.transaction_type === 'deposit' || tx.transaction_type === 'refund' ? '+' : '-'}${formatCurrency(tx.amount)}
-                    </p>
-                    <p class="text-sm text-gray-600">${t('dashboard.balanceAfter', 'Số dư')}: ${formatCurrency(tx.balance_after)}</p>
-                </div>
-            </div>
+        const isPositive = tx.transaction_type === 'deposit' || tx.transaction_type === 'refund';
+        const type = typeConfig[tx.transaction_type] || { bg: 'bg-dark-600', text: 'text-dark-400', label: tx.transaction_type };
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-dark-800/50 transition-colors';
+        tr.innerHTML = `
+            <td class="px-4 py-3">
+                <p class="text-white text-sm">${tx.description}</p>
+            </td>
+            <td class="px-4 py-3">
+                <span class="px-2 py-1 rounded-full text-xs font-medium ${type.bg} ${type.text}">
+                    ${type.label}
+                </span>
+            </td>
+            <td class="px-4 py-3">
+                <p class="font-semibold ${isPositive ? 'text-green-400' : 'text-red-400'}">
+                    ${isPositive ? '+' : '-'}${formatCurrency(tx.amount)}
+                </p>
+            </td>
+            <td class="px-4 py-3">
+                <p class="text-dark-300">${formatCurrency(tx.balance_after)}</p>
+            </td>
+            <td class="px-4 py-3">
+                <p class="text-dark-300 text-sm">${new Date(tx.created_at).toLocaleDateString()}</p>
+                <p class="text-xs text-dark-500">${new Date(tx.created_at).toLocaleTimeString()}</p>
+            </td>
         `;
-        container.appendChild(div);
+        container.appendChild(tr);
     });
 }
 
 function switchTab(tab) {
-    // Hide all content
     document.getElementById('ordersContent').classList.add('hidden');
     document.getElementById('transactionsContent').classList.add('hidden');
-
-    // Remove active state from all tabs
-    document.querySelectorAll('.tab-button').forEach(btn => {
-        btn.classList.remove('border-blue-600', 'text-blue-600');
-        btn.classList.add('text-gray-600');
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('border-primary-500', 'text-primary-400');
+        btn.classList.add('border-transparent', 'text-dark-400');
     });
 
-    // Show selected content
     if (tab === 'orders') {
         document.getElementById('ordersContent').classList.remove('hidden');
-        document.getElementById('ordersTab').classList.add('border-blue-600', 'text-blue-600');
+        document.getElementById('ordersTab').classList.add('border-primary-500', 'text-primary-400');
     } else {
         document.getElementById('transactionsContent').classList.remove('hidden');
-        document.getElementById('transactionsTab').classList.add('border-blue-600', 'text-blue-600');
+        document.getElementById('transactionsTab').classList.add('border-primary-500', 'text-primary-400');
     }
 }
 
@@ -323,10 +428,7 @@ function logout() {
 }
 
 function formatCurrency(amount) {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD'
-    }).format(amount);
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
 }
 </script>
 {% endblock %}

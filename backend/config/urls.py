@@ -6,6 +6,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 # from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView  # Disabled for quick start
+from apps.core.views import captcha_refresh
 
 urlpatterns = [
     # Admin
@@ -15,11 +16,16 @@ urlpatterns = [
     # path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     # path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
 
+    # CAPTCHA - Custom refresh view (CSRF exempt) + default captcha URLs
+    path('captcha/refresh/', captcha_refresh, name='captcha-refresh'),
+    path('captcha/', include('captcha.urls')),
+
     # API endpoints
     path('api/users/', include('apps.users.urls')),
     path('api/games/', include('apps.games.urls')),
     path('api/orders/', include('apps.orders.urls')),
     path('api/wallets/', include('apps.wallets.urls')),
+    path('api/notifications/', include('apps.notifications.urls')),
 
     # Frontend views
     path('', include('apps.core.urls')),

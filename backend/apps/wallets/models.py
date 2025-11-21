@@ -91,3 +91,109 @@ class WalletTransaction(TimeStampedModel):
 
     def __str__(self):
         return f"{self.user.email} - {self.transaction_type} - ${self.amount}"
+
+
+class CryptoDeposit(TimeStampedModel):
+    """
+    Model for cryptocurrency deposits (USDT TRC20).
+    Used for both: direct wallet deposits and order payments.
+    """
+    STATUS_CHOICES = [
+        ('pending_verification', 'Chờ xác minh'),
+        ('confirmed', 'Đã xác nhận'),
+        ('rejected', 'Từ chối'),
+    ]
+
+    # User info
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='crypto_deposits',
+        verbose_name='User'
+    )
+
+    # Amount
+    amount = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        verbose_name='Amount (USD)',
+        help_text='Amount in USDT'
+    )
+
+    # Blockchain transaction details
+    tx_hash = models.CharField(
+        max_length=255,
+        unique=True,
+        verbose_name='Transaction Hash',
+        help_text='TronScan transaction hash'
+    )
+    from_address = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name='From Address',
+        help_text='Sender wallet address (optional)'
+    )
+    to_address = models.CharField(
+        max_length=100,
+        verbose_name='To Address',
+        help_text='Our USDT TRC20 receiving address'
+    )
+
+    # Status
+    status = models.CharField(
+        max_length=30,
+        choices=STATUS_CHOICES,
+        default='pending_verification',
+        verbose_name='Status'
+    )
+
+    # Related order (if deposit is for specific order payment)
+    related_order = models.ForeignKey(
+        'orders.Order',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='crypto_deposits',
+        verbose_name='Related Order',
+        help_text='If this deposit is to pay for a specific order'
+    )
+
+    # Verification details
+    verified_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='verified_crypto_deposits',
+        verbose_name='Verified By'
+    )
+    verified_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name='Verified At'
+    )
+    admin_note = models.TextField(
+        blank=True,
+        verbose_name='Admin Note',
+        help_text='Internal notes for admin'
+    )
+
+    # Auto-payment tracking
+    auto_paid_order = models.BooleanField(
+        default=False,
+        verbose_name='Auto Paid Order',
+        help_text='Whether this deposit auto-paid the related order'
+    )
+
+    class Meta:
+        verbose_name = 'Crypto Deposit (USDT TRC20)'
+        verbose_name_plural = 'Crypto Deposits (USDT TRC20)'
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['status', '-created_at']),
+            models.Index(fields=['user', '-created_at']),
+        ]
+
+    def __str__(self):
+        order_info = f" (Order #{self.related_order.order_id})" if self.related_order else ""
+        return f"{self.user.email} - ${self.amount} USDT{order_info} - {self.get_status_display()}"

@@ -1,112 +1,227 @@
 {% extends 'base.html' %}
 
-{% block title %}Đăng nhập - Game TopUp{% endblock %}
+{% block title %}Login - TOPUPGAMEMOBILE{% endblock %}
+
+{% block meta_description %}Login to your TOPUPGAMEMOBILE account to manage your game top-ups, wallet balance, and order history.{% endblock %}
 
 {% block content %}
-<div class="max-w-md mx-auto">
-    <div class="bg-white rounded-lg shadow-xl p-8">
-        <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
-                <i class="fas fa-sign-in-alt text-3xl text-blue-600"></i>
+<div class="min-h-[70vh] flex items-center justify-center py-8">
+    <div class="w-full max-w-md">
+        <!-- Login Card -->
+        <div class="card p-8">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-gradient-to-br from-primary-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-gamepad text-3xl text-white"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-white mb-2">Welcome Back!</h1>
+                <p class="text-dark-400">Sign in to your account</p>
             </div>
-            <h1 class="text-3xl font-bold text-gray-800" data-i18n="auth.loginTitle">Đăng nhập</h1>
-            <p class="text-gray-600 mt-2" data-i18n="auth.loginSubtitle">Chào mừng trở lại!</p>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="space-y-5">
+                <!-- Username/Email -->
+                <div>
+                    <label class="form-label">
+                        <i class="fas fa-user mr-1"></i>
+                        Email or Username
+                    </label>
+                    <input
+                        type="text"
+                        id="email_or_username"
+                        placeholder="Enter email or username"
+                        required
+                        class="form-input"
+                        autocomplete="username"
+                    >
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <label class="form-label">
+                        <i class="fas fa-lock mr-1"></i>
+                        Password
+                    </label>
+                    <div class="relative">
+                        <input
+                            type="password"
+                            id="password"
+                            placeholder="Enter password"
+                            required
+                            class="form-input pr-12"
+                            autocomplete="current-password"
+                        >
+                        <button
+                            type="button"
+                            onclick="togglePassword('password', 'passIcon')"
+                            class="absolute right-4 top-1/2 transform -translate-y-1/2 text-dark-400 hover:text-white transition-colors"
+                        >
+                            <i class="fas fa-eye" id="passIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CAPTCHA -->
+                <div>
+                    <label class="form-label">
+                        <i class="fas fa-shield-alt mr-1"></i>
+                        Security Check
+                    </label>
+                    <div class="flex items-center space-x-3 mb-3">
+                        <img id="captchaImage" src="" alt="CAPTCHA" class="h-12 rounded-lg bg-dark-700 border border-dark-600" style="min-width: 120px;">
+                        <button type="button" id="refreshCaptcha" class="p-3 bg-dark-700 hover:bg-dark-600 rounded-lg transition-colors border border-dark-600">
+                            <i class="fas fa-sync-alt text-dark-400"></i>
+                        </button>
+                    </div>
+                    <input type="hidden" id="captchaKey" name="captcha_0">
+                    <input
+                        type="text"
+                        id="captchaValue"
+                        name="captcha_1"
+                        required
+                        placeholder="Enter the text above"
+                        class="form-input"
+                    >
+                </div>
+
+                <!-- Forgot Password -->
+                <div class="flex justify-end">
+                    <a href="/forgot-password/" class="text-sm text-primary-400 hover:text-primary-300 transition-colors">
+                        Forgot password?
+                    </a>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" class="w-full btn btn-primary btn-glow py-3" id="loginBtn">
+                    <i class="fas fa-sign-in-alt mr-2"></i>
+                    Sign In
+                </button>
+
+                <!-- Register Link -->
+                <p class="text-center text-dark-400 text-sm">
+                    Don't have an account?
+                    <a href="/register/" class="text-primary-400 hover:text-primary-300 font-semibold transition-colors">
+                        Register now
+                    </a>
+                </p>
+            </form>
         </div>
 
-        <!-- Error Alert -->
-        <div id="errorAlert" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            <p id="errorMessage"></p>
-        </div>
-
-        <!-- Login Form -->
-        <form id="loginForm" class="space-y-6">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                    <i class="fas fa-envelope mr-1"></i>
-                    <span data-i18n="auth.email">Email</span>
-                </label>
-                <input
-                    type="email"
-                    id="email"
-                    required
-                    data-i18n-attr="placeholder"
-                    data-i18n="auth.emailPlaceholder"
-                    placeholder="your@email.com"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
+        <!-- Trust Badges -->
+        <div class="mt-6 flex justify-center space-x-6 text-xs text-dark-500">
+            <div class="flex items-center">
+                <i class="fas fa-shield-alt mr-1"></i>
+                <span>Secure</span>
             </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                    <i class="fas fa-lock mr-1"></i>
-                    <span data-i18n="auth.password">Mật khẩu</span>
-                </label>
-                <input
-                    type="password"
-                    id="password"
-                    required
-                    data-i18n-attr="placeholder"
-                    data-i18n="auth.passwordPlaceholder"
-                    placeholder="••••••••"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
+            <div class="flex items-center">
+                <i class="fas fa-lock mr-1"></i>
+                <span>Encrypted</span>
             </div>
-
-            <button
-                type="submit"
-                class="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-lg hover:from-blue-700 hover:to-purple-700 transition transform hover:scale-105"
-            >
-                <i class="fas fa-sign-in-alt mr-2"></i>
-                <span data-i18n="auth.login">Đăng nhập</span>
-            </button>
-        </form>
-
-        <div class="mt-6 text-center">
-            <p class="text-gray-600">
-                <span data-i18n="auth.noAccount">Chưa có tài khoản?</span>
-                <a href="/register/" class="text-blue-600 hover:text-blue-800 font-semibold">
-                    <span data-i18n="auth.registerNow">Đăng ký ngay</span>
-                </a>
-            </p>
+            <div class="flex items-center">
+                <i class="fas fa-headset mr-1"></i>
+                <span>24/7 Support</span>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-document.getElementById('loginForm').addEventListener('submit', async function(e) {
+// Load CAPTCHA
+async function loadCaptcha() {
+    try {
+        const response = await fetch('/captcha/refresh/', {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        const data = await response.json();
+        document.getElementById('captchaImage').src = data.image_url;
+        document.getElementById('captchaKey').value = data.key;
+    } catch (error) {
+        console.error('Error loading CAPTCHA:', error);
+    }
+}
+
+document.getElementById('refreshCaptcha')?.addEventListener('click', loadCaptcha);
+loadCaptcha();
+
+// Check if already logged in
+document.addEventListener('DOMContentLoaded', function() {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+        window.location.href = '/dashboard/';
+    }
+});
+
+// Handle form submit
+document.getElementById('loginForm')?.addEventListener('submit', async function(e) {
     e.preventDefault();
 
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const errorAlert = document.getElementById('errorAlert');
-    const errorMessage = document.getElementById('errorMessage');
+    const btn = document.getElementById('loginBtn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Signing in...';
+    btn.disabled = true;
+
+    const formData = {
+        email_or_username: document.getElementById('email_or_username').value.trim(),
+        password: document.getElementById('password').value,
+        captcha: [
+            document.getElementById('captchaKey').value,
+            document.getElementById('captchaValue').value
+        ]
+    };
 
     try {
         const response = await fetch('/api/users/login/', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email, password })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
         });
 
         const data = await response.json();
 
         if (response.ok) {
-            // Save tokens
             localStorage.setItem('access_token', data.access);
             localStorage.setItem('refresh_token', data.refresh);
+            // Save user info for admin/staff check
+            if (data.user) {
+                localStorage.setItem('user_info', JSON.stringify(data.user));
+            }
 
-            // Redirect to games page
-            window.location.href = '/games/';
+            window.modal?.success('Login Successful', 'Redirecting...', {
+                autoClose: true,
+                autoCloseDelay: 1500,
+                onClose: () => window.location.href = '/dashboard/'
+            });
         } else {
-            errorAlert.classList.remove('hidden');
-            errorMessage.textContent = data.detail || t('auth.loginError', 'Email hoặc mật khẩu không đúng');
+            let errorMsg = 'Invalid credentials';
+            if (data.captcha) errorMsg = 'Invalid CAPTCHA. Please try again.';
+            else if (data.email_or_username) errorMsg = data.email_or_username[0] || data.email_or_username;
+            else if (data.password) errorMsg = data.password[0] || data.password;
+            else if (data.detail) errorMsg = data.detail;
+
+            window.modal?.error('Login Failed', errorMsg);
+            loadCaptcha();
+            document.getElementById('captchaValue').value = '';
         }
     } catch (error) {
-        errorAlert.classList.remove('hidden');
-        errorMessage.textContent = t('common.error', 'Có lỗi xảy ra. Vui lòng thử lại.');
+        window.modal?.error('Error', 'Connection error. Please try again.');
+        loadCaptcha();
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
     }
 });
+
+function togglePassword(inputId, iconId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById(iconId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+}
 </script>
 {% endblock %}

@@ -2,12 +2,14 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.conf import settings
-from .models import UserWallet, Deposit, WalletTransaction
+from .models import UserWallet, Deposit, WalletTransaction, CryptoDeposit
 from .serializers import (
     UserWalletSerializer,
     DepositCreateSerializer,
     DepositSerializer,
-    WalletTransactionSerializer
+    WalletTransactionSerializer,
+    CryptoDepositCreateSerializer,
+    CryptoDepositSerializer
 )
 
 
@@ -68,3 +70,33 @@ class AdminWalletAddressView(APIView):
         return Response({
             'admin_address': getattr(settings, 'ADMIN_USDT_TRC20_ADDRESS', ''),
         })
+
+
+class CryptoDepositCreateView(generics.CreateAPIView):
+    """API endpoint for creating crypto deposit"""
+    serializer_class = CryptoDepositCreateSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(
+            user=self.request.user,
+            to_address=settings.ADMIN_USDT_TRC20_ADDRESS
+        )
+
+
+class CryptoDepositListView(generics.ListAPIView):
+    """API endpoint for listing user crypto deposits"""
+    serializer_class = CryptoDepositSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return CryptoDeposit.objects.filter(user=self.request.user).select_related('related_order')
+
+
+class CryptoDepositDetailView(generics.RetrieveAPIView):
+    """API endpoint for crypto deposit detail"""
+    serializer_class = CryptoDepositSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return CryptoDeposit.objects.filter(user=self.request.user).select_related('related_order')

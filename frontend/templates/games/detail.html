@@ -1,327 +1,369 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ game.name }} - Nạp Game{% endblock %}
+{% block title %}{{ game.name }} - Top-up Game | TOPUPGAMEMOBILE{% endblock %}
+
+{% block meta_description %}Top-up {{ game.name }} instantly with best prices. Secure payment via USDT TRC20 or internal wallet. Fast delivery guaranteed.{% endblock %}
 
 {% block content %}
 <div class="max-w-6xl mx-auto">
-    <!-- Back Button -->
-    <a href="/games/" class="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6">
-        <i class="fas fa-arrow-left mr-2"></i>
-        <span data-i18n="gameDetail.backToList">Quay lại danh sách game</span>
-    </a>
+    <!-- Breadcrumb -->
+    <nav class="text-sm mb-6" aria-label="Breadcrumb">
+        <ol class="flex items-center space-x-2">
+            <li><a href="/" class="text-dark-400 hover:text-primary-400 transition-colors">Home</a></li>
+            <li><i class="fas fa-chevron-right text-dark-600 text-xs"></i></li>
+            <li><a href="/games/" class="text-dark-400 hover:text-primary-400 transition-colors">Games</a></li>
+            <li><i class="fas fa-chevron-right text-dark-600 text-xs"></i></li>
+            <li class="text-white" id="breadcrumbGameName">Loading...</li>
+        </ol>
+    </nav>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Game Info -->
+        <!-- Game Info Sidebar -->
         <div class="lg:col-span-1">
-            <div class="bg-white rounded-lg shadow-lg p-6 sticky top-6">
-                <img id="gameImage" class="w-full rounded-lg mb-4" src="" alt="">
-                <h1 id="gameName" class="text-2xl font-bold text-gray-800 mb-2"></h1>
-                <p id="gameDescription" class="text-gray-600 mb-4"></p>
-                <div class="border-t pt-4">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-gray-600" data-i18n="gameDetail.status">Trạng thái:</span>
-                        <span id="gameStatus" class="px-3 py-1 rounded-full text-sm font-semibold"></span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-gray-600" data-i18n="gameDetail.valueRange">Giá trị:</span>
-                        <span class="font-semibold">
-                            <span id="gameMinAmount"></span> - <span id="gameMaxAmount"></span>
-                        </span>
-                    </div>
+            <div class="card p-6 sticky top-24">
+                <img id="gameImage" class="w-full rounded-xl mb-4" src="" alt="">
+                <h1 id="gameName" class="text-2xl font-bold text-white mb-2"></h1>
+                <p id="gameDescription" class="text-dark-400 mb-4"></p>
+                <div class="flex items-center justify-between pt-4 border-t border-dark-700">
+                    <span class="text-dark-400">Status:</span>
+                    <span id="gameStatus" class="px-3 py-1 rounded-full text-sm font-semibold"></span>
                 </div>
             </div>
         </div>
 
         <!-- Order Form -->
         <div class="lg:col-span-2">
-            <div class="bg-white rounded-lg shadow-lg p-8">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6">
-                    <i class="fas fa-shopping-cart text-blue-600 mr-2"></i>
-                    <span data-i18n="gameDetail.createOrder">Tạo đơn nạp</span>
+            <div class="card p-6 md:p-8">
+                <h2 class="text-2xl font-bold text-white mb-6">
+                    <i class="fas fa-shopping-cart text-primary-400 mr-2"></i>
+                    Create Top-up Order
                 </h2>
 
                 <form id="orderForm" class="space-y-6">
-                    <!-- Server Selection -->
-                    <div id="serverSection" class="hidden">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            <i class="fas fa-server mr-1"></i>
-                            <span data-i18n="gameDetail.selectServer">Chọn Server</span> *
-                        </label>
-                        <select id="serverSelect" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            <option value="" data-i18n="gameDetail.selectServerOption">-- Chọn server --</option>
-                        </select>
-                    </div>
-
                     <!-- Package Selection -->
                     <div id="packageSection">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <label class="form-label">
                             <i class="fas fa-box mr-1"></i>
-                            <span data-i18n="gameDetail.selectPackage">Gói nạp (Tùy chọn)</span>
+                            Select Package <span class="text-red-400">*</span>
                         </label>
-                        <div id="packageGrid" class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                            <!-- Packages will be loaded here -->
+
+                        <!-- Package Type Tabs -->
+                        <div class="flex space-x-2 mb-4">
+                            <button type="button" id="normalTab" class="flex-1 px-4 py-2 rounded-lg font-semibold transition bg-primary-600 text-white">
+                                <i class="fas fa-box mr-2"></i>Normal
+                            </button>
+                            <button type="button" id="warrantyTab" class="flex-1 px-4 py-2 rounded-lg font-semibold transition bg-dark-700 text-dark-300 hover:bg-dark-600">
+                                <i class="fas fa-shield-alt mr-2"></i>Warranty
+                            </button>
+                        </div>
+
+                        <!-- Package Grids -->
+                        <div id="normalPackages" class="package-container">
+                            <div id="normalPackageGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3"></div>
+                            <div id="normalPackagesEmpty" class="hidden text-center py-8 text-dark-400">
+                                <i class="fas fa-inbox text-3xl mb-2"></i>
+                                <p>No normal packages available</p>
+                            </div>
+                        </div>
+
+                        <div id="warrantyPackages" class="package-container hidden">
+                            <div id="warrantyPackageGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3"></div>
+                            <div id="warrantyPackagesEmpty" class="hidden text-center py-8 text-dark-400">
+                                <i class="fas fa-inbox text-3xl mb-2"></i>
+                                <p>No warranty packages available</p>
+                            </div>
+                        </div>
+
+                        <!-- <p class="mt-3 text-sm text-dark-400">
+                            <i class="fas fa-info-circle mr-1 text-primary-400"></i>
+                            <strong>Warranty Package:</strong> 100% money-back guarantee if system error occurs
+                        </p> -->
+
+                        <!-- Policy Agreement Checkbox -->
+                        <div class="mt-4 p-4 bg-dark-700/50 rounded-lg border border-dark-600">
+                            <label class="flex items-start cursor-pointer group">
+                                <input type="checkbox" id="policyAgreement" checked class="mt-1 mr-3 w-4 h-4 text-primary-600 bg-dark-700 border-dark-500 rounded focus:ring-primary-500 focus:ring-2">
+                                <span class="text-sm text-dark-300 group-hover:text-dark-200">
+                                    I agree to the
+                                    <a href="/refund/" target="_blank" class="text-primary-400 hover:text-primary-300 underline">
+                                        Warranty Policy
+                                    </a>
+                                    of TopUpGameMobile
+                                </span>
+                            </label>
                         </div>
                     </div>
 
-                    <!-- Custom Amount -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            <i class="fas fa-coins mr-1"></i>
-                            <span data-i18n="gameDetail.customAmount">Hoặc nhập số tiền tùy chỉnh (USD)</span> *
-                        </label>
-                        <input
-                            type="number"
-                            id="customAmount"
-                            data-i18n-attr="placeholder"
-                            data-i18n="gameDetail.enterAmount"
-                            placeholder="Nhập số tiền"
-                            step="0.01"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                        <p class="mt-1 text-sm text-gray-500">
-                            <span data-i18n="gameDetail.min">Min</span>: <span id="minAmount"></span> - <span data-i18n="gameDetail.max">Max</span>: <span id="maxAmount"></span>
-                        </p>
-                    </div>
-
                     <!-- Game Account Info -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            <i class="fas fa-user mr-1"></i>
-                            <span data-i18n="gameDetail.gameUid">UID / ID Nhân vật</span> *
-                        </label>
-                        <input
-                            type="text"
-                            id="gameUid"
-                            data-i18n-attr="placeholder"
-                            data-i18n="gameDetail.enterUid"
-                            placeholder="Nhập UID hoặc ID nhân vật"
-                            required
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                    </div>
+                    <div class="pt-6 border-t border-dark-700">
+                        <h3 class="text-lg font-semibold text-white mb-4">
+                            <i class="fas fa-gamepad mr-2 text-pink-400"></i>
+                            Game Account Information
+                        </h3>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            <i class="fas fa-user-tag mr-1"></i>
-                            <span data-i18n="gameDetail.gameUsername">Tên tài khoản game (Tùy chọn)</span>
-                        </label>
-                        <input
-                            type="text"
-                            id="gameUsername"
-                            data-i18n-attr="placeholder"
-                            data-i18n="gameDetail.enterUsername"
-                            placeholder="Tên nhân vật hoặc tài khoản"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="form-label">UID / Account ID <span class="text-red-400">*</span></label>
+                                <input type="text" id="gameUid" placeholder="Enter UID or account ID" required class="form-input">
+                            </div>
+                            <div>
+                                <label class="form-label">Login Username <span class="text-red-400">*</span></label>
+                                <input type="text" id="gameUsername" placeholder="Game account username" required class="form-input">
+                            </div>
+                            <div>
+                                <label class="form-label">Password <span class="text-red-400">*</span></label>
+                                <input type="password" id="gamePassword" placeholder="Game account password" required class="form-input">
+                            </div>
+                            <div>
+                                <label class="form-label">Character Name <span class="text-red-400">*</span></label>
+                                <input type="text" id="characterName" placeholder="Character name in game" required class="form-input">
+                            </div>
+                        </div>
+
+                        <div class="mt-4 p-3 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
+                            <p class="text-xs text-yellow-400">
+                                <i class="fas fa-shield-alt mr-1"></i>
+                                <strong>Security:</strong> Your account information is encrypted and only used for top-up purposes.
+                            </p>
+                        </div>
                     </div>
 
                     <!-- Note -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            <i class="fas fa-comment mr-1"></i>
-                            <span data-i18n="gameDetail.note">Ghi chú (Tùy chọn)</span>
-                        </label>
-                        <textarea
-                            id="customerNote"
-                            rows="3"
-                            data-i18n-attr="placeholder"
-                            data-i18n="gameDetail.enterNote"
-                            placeholder="Ghi chú cho admin..."
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        ></textarea>
+                        <label class="form-label">Note (Optional)</label>
+                        <textarea id="customerNote" rows="3" placeholder="Notes for admin..." class="form-input"></textarea>
                     </div>
 
                     <!-- Payment Method -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            <i class="fas fa-credit-card mr-1"></i>
-                            <span data-i18n="gameDetail.paymentMethod">Phương thức thanh toán</span> *
-                        </label>
+                        <label class="form-label">Payment Method <span class="text-red-400">*</span></label>
                         <div class="grid grid-cols-2 gap-4">
                             <label class="payment-method cursor-pointer">
                                 <input type="radio" name="paymentMethod" value="wallet" class="hidden">
-                                <div class="border-2 border-gray-300 rounded-lg p-4 hover:border-blue-500 transition">
-                                    <i class="fas fa-wallet text-2xl text-blue-600 mb-2"></i>
-                                    <p class="font-semibold" data-i18n="gameDetail.wallet">Ví nội bộ</p>
-                                    <p class="text-sm text-gray-500"><span data-i18n="gameDetail.balance">Số dư</span>: <span id="walletBalance">$0.00</span></p>
+                                <div class="card p-4 hover:border-primary-500 transition-colors text-center">
+                                    <i class="fas fa-wallet text-2xl text-primary-400 mb-2"></i>
+                                    <p class="font-semibold text-white">Internal Wallet</p>
+                                    <p class="text-sm text-dark-400">Balance: <span id="walletBalance">$0.00</span></p>
                                 </div>
                             </label>
                             <label class="payment-method cursor-pointer">
                                 <input type="radio" name="paymentMethod" value="crypto" class="hidden">
-                                <div class="border-2 border-gray-300 rounded-lg p-4 hover:border-blue-500 transition">
-                                    <i class="fab fa-bitcoin text-2xl text-yellow-600 mb-2"></i>
-                                    <p class="font-semibold" data-i18n="gameDetail.crypto">Crypto</p>
-                                    <p class="text-sm text-gray-500" data-i18n="gameDetail.cryptoPayment">Crypto payment</p>
+                                <div class="card p-4 hover:border-primary-500 transition-colors text-center">
+                                    <i class="fab fa-bitcoin text-2xl text-yellow-500 mb-2"></i>
+                                    <p class="font-semibold text-white">Crypto</p>
+                                    <p class="text-sm text-dark-400">USDT TRC20</p>
                                 </div>
                             </label>
                         </div>
                     </div>
 
                     <!-- Price Summary -->
-                    <div class="bg-gray-50 rounded-lg p-6">
+                    <div class="bg-gradient-to-r from-primary-600/20 to-pink-600/20 rounded-xl p-6 border border-primary-500/30">
+                        <div id="packageSummary" class="hidden mb-4 pb-4 border-b border-primary-500/30">
+                            <p class="text-sm text-dark-400 mb-1">Selected package:</p>
+                            <p class="font-semibold text-lg text-white" id="selectedPackageName">-</p>
+                            <p class="text-sm text-dark-400">
+                                <span id="selectedPackageAmount">0</span> <span id="selectedPackageUnit">-</span>
+                            </p>
+                        </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-gray-600" data-i18n="gameDetail.totalAmount">Giá trị nạp:</span>
-                            <span class="text-xl font-bold text-gray-800" id="totalUSD">$0.00</span>
+                            <span class="text-dark-300 font-medium">Total Amount:</span>
+                            <span class="text-3xl font-bold text-white" id="totalUSD">$0.00</span>
                         </div>
                     </div>
 
                     <!-- Submit Button -->
-                    <button
-                        type="submit"
-                        class="w-full px-6 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-lg rounded-lg hover:from-blue-700 hover:to-purple-700 transition transform hover:scale-105"
-                    >
+                    <button type="submit" class="w-full btn btn-primary btn-glow text-lg py-4" id="submitBtn" disabled>
                         <i class="fas fa-check-circle mr-2"></i>
-                        <span data-i18n="gameDetail.createOrderBtn">Tạo đơn hàng</span>
+                        Create Order
                     </button>
                 </form>
             </div>
+        </div>
+    </div>
+
+    <!-- Game Introduction -->
+    <div id="gameIntroductionSection" class="hidden mt-8">
+        <div class="card p-6 md:p-8">
+            <h2 class="text-2xl font-bold text-white mb-6">
+                <i class="fas fa-info-circle text-primary-400 mr-2"></i>
+                <span id="introductionTitle">About This Game</span>
+            </h2>
+            <div id="gameIntroduction" class="prose prose-invert max-w-none text-dark-300"></div>
         </div>
     </div>
 </div>
 
 <script>
 let gameData = null;
-let selectedPackage = null;  // Store selected package
+let selectedPackage = null;
+let packagesData = { normal: [], warranty: [] };
 
 document.addEventListener('DOMContentLoaded', function() {
     const slug = window.location.pathname.split('/')[2];
     loadGameDetail(slug);
     loadWalletBalance();
+    setupEventListeners();
+});
 
-    // Payment method selection
+function setupEventListeners() {
+    document.getElementById('normalTab')?.addEventListener('click', () => switchPackageTab('normal'));
+    document.getElementById('warrantyTab')?.addEventListener('click', () => switchPackageTab('warranty'));
+
     document.querySelectorAll('.payment-method').forEach(label => {
         label.addEventListener('click', function() {
-            document.querySelectorAll('.payment-method div').forEach(div => {
-                div.classList.remove('border-blue-500', 'bg-blue-50');
+            document.querySelectorAll('.payment-method .card').forEach(div => {
+                div.classList.remove('border-primary-500', 'bg-primary-500/10');
             });
-            this.querySelector('div').classList.add('border-blue-500', 'bg-blue-50');
+            this.querySelector('.card').classList.add('border-primary-500', 'bg-primary-500/10');
         });
     });
 
-    // Amount calculation
-    document.getElementById('customAmount')?.addEventListener('input', function() {
-        // Clear selected package when manually typing amount
-        selectedPackage = null;
-        document.querySelectorAll('.package-item').forEach(el => {
-            el.classList.remove('border-blue-500', 'bg-blue-50');
-        });
-        updateTotalPrice();
-    });
-
-    // Form submission
     document.getElementById('orderForm')?.addEventListener('submit', handleOrderSubmit);
-});
+}
+
+function switchPackageTab(type) {
+    const normalTab = document.getElementById('normalTab');
+    const warrantyTab = document.getElementById('warrantyTab');
+
+    if (type === 'normal') {
+        normalTab.classList.remove('bg-dark-700', 'text-dark-300');
+        normalTab.classList.add('bg-primary-600', 'text-white');
+        warrantyTab.classList.remove('bg-primary-600', 'text-white');
+        warrantyTab.classList.add('bg-dark-700', 'text-dark-300');
+        document.getElementById('normalPackages').classList.remove('hidden');
+        document.getElementById('warrantyPackages').classList.add('hidden');
+    } else {
+        warrantyTab.classList.remove('bg-dark-700', 'text-dark-300');
+        warrantyTab.classList.add('bg-primary-600', 'text-white');
+        normalTab.classList.remove('bg-primary-600', 'text-white');
+        normalTab.classList.add('bg-dark-700', 'text-dark-300');
+        document.getElementById('warrantyPackages').classList.remove('hidden');
+        document.getElementById('normalPackages').classList.add('hidden');
+    }
+}
 
 function loadGameDetail(slug) {
     fetch(`/api/games/${slug}/`)
         .then(response => {
-            if (!response.ok) {
-                throw new Error('Không thể tải thông tin game');
-            }
+            if (!response.ok) throw new Error('Unable to load game info');
             return response.json();
         })
         .then(game => {
             gameData = game;
             displayGameInfo(game);
-            loadPackages(game.packages);
-            if (game.requires_server && game.servers) {
-                loadServers(game.servers);
-            }
+            loadGamePackages(slug);
         })
         .catch(error => {
             console.error('Error:', error);
-            window.modal.error(
-                'Lỗi tải game',
-                'Không thể tải thông tin game. Vui lòng thử lại sau.',
-                {
-                    actions: [{
-                        label: 'Quay lại',
-                        style: 'primary',
-                        onClick: () => window.location.href = '/games/'
-                    }]
-                }
-            );
+            window.modal?.error('Error', 'Unable to load game information', {
+                actions: [{
+                    label: 'Go Back',
+                    style: 'primary',
+                    onClick: () => window.location.href = '/games/'
+                }]
+            });
         });
+}
+
+function loadGamePackages(slug) {
+    fetch(`/api/games/${slug}/packages/`)
+        .then(response => {
+            if (!response.ok) throw new Error('Unable to load packages');
+            return response.json();
+        })
+        .then(data => {
+            packagesData = data.packages;
+            displayPackages('normal', packagesData.normal);
+            displayPackages('warranty', packagesData.warranty);
+        })
+        .catch(error => console.error('Error loading packages:', error));
 }
 
 function displayGameInfo(game) {
-    document.getElementById('gameImage').src = game.image;
+    document.getElementById('gameImage').src = game.image || '/static/images/game-placeholder.png';
     document.getElementById('gameName').textContent = game.name;
+    document.getElementById('breadcrumbGameName').textContent = game.name;
     document.getElementById('gameDescription').textContent = game.description;
-    document.getElementById('gameMinAmount').textContent = formatCurrency(game.min_amount);
-    document.getElementById('gameMaxAmount').textContent = formatCurrency(game.max_amount);
-    document.getElementById('minAmount').textContent = formatCurrency(game.min_amount);
-    document.getElementById('maxAmount').textContent = formatCurrency(game.max_amount);
 
     const statusSpan = document.getElementById('gameStatus');
     if (game.status === 'active') {
-        statusSpan.className = 'px-3 py-1 rounded-full text-sm font-semibold bg-green-500 text-white';
-        statusSpan.textContent = t('games.active', 'Hoạt động');
+        statusSpan.className = 'px-3 py-1 rounded-full text-sm font-semibold bg-green-500/20 text-green-400';
+        statusSpan.textContent = 'Active';
     } else if (game.status === 'maintenance') {
-        statusSpan.className = 'px-3 py-1 rounded-full text-sm font-semibold bg-yellow-500 text-white';
-        statusSpan.textContent = t('games.maintenance', 'Bảo trì');
+        statusSpan.className = 'px-3 py-1 rounded-full text-sm font-semibold bg-yellow-500/20 text-yellow-400';
+        statusSpan.textContent = 'Maintenance';
     } else {
-        statusSpan.className = 'px-3 py-1 rounded-full text-sm font-semibold bg-gray-500 text-white';
-        statusSpan.textContent = t('games.inactive', 'Tạm dừng');
+        statusSpan.className = 'px-3 py-1 rounded-full text-sm font-semibold bg-dark-600 text-dark-300';
+        statusSpan.textContent = 'Inactive';
+    }
+
+    if (game.introduction && game.introduction.trim() !== '') {
+        document.getElementById('introductionTitle').textContent = `About ${game.name}`;
+        document.getElementById('gameIntroduction').innerHTML = game.introduction;
+        document.getElementById('gameIntroductionSection').classList.remove('hidden');
     }
 }
 
-function loadServers(servers) {
-    const serverSection = document.getElementById('serverSection');
-    const serverSelect = document.getElementById('serverSelect');
+function displayPackages(type, packages) {
+    const gridId = type === 'normal' ? 'normalPackageGrid' : 'warrantyPackageGrid';
+    const emptyId = type === 'normal' ? 'normalPackagesEmpty' : 'warrantyPackagesEmpty';
+    const grid = document.getElementById(gridId);
+    const empty = document.getElementById(emptyId);
 
-    if (servers && servers.length > 0) {
-        serverSection.classList.remove('hidden');
-        servers.forEach(server => {
-            const option = document.createElement('option');
-            option.value = server.id;
-            option.textContent = server.name;
-            serverSelect.appendChild(option);
-        });
+    grid.innerHTML = '';
+
+    if (!packages || packages.length === 0) {
+        empty.classList.remove('hidden');
+        return;
     }
-}
 
-function loadPackages(packages) {
-    const packageGrid = document.getElementById('packageGrid');
+    empty.classList.add('hidden');
 
-    if (packages && packages.length > 0) {
-        packages.forEach(pkg => {
-            const div = document.createElement('div');
-            div.className = 'package-item border-2 border-gray-300 rounded-lg p-4 cursor-pointer hover:border-blue-500 transition text-center';
-            div.dataset.packageId = pkg.id;  // Store package ID
-            div.innerHTML = `
-                <p class="font-bold text-lg mb-1">${pkg.name}</p>
-                <p class="text-blue-600 font-semibold">${formatCurrency(pkg.final_price)}</p>
-                ${pkg.discount_percent > 0 ? `<p class="text-xs text-green-600">${t('gameDetail.discount', 'Giảm')} ${pkg.discount_percent}%</p>` : ''}
-            `;
-            div.onclick = () => selectPackage(pkg);
-            packageGrid.appendChild(div);
-        });
-    }
+    packages.forEach(pkg => {
+        const div = document.createElement('div');
+        const isWarranty = pkg.package_type === 'warranty';
+
+        div.className = `package-item card p-3 cursor-pointer hover:border-primary-500 transition-all text-center ${isWarranty ? 'bg-yellow-500/5' : ''}`;
+        div.dataset.packageId = pkg.id;
+        div.dataset.packageType = pkg.package_type;
+
+        div.innerHTML = `
+            <p class="font-semibold text-sm mb-1 text-white truncate" title="${pkg.name}">${pkg.name}</p>
+            <p class="text-primary-400 font-bold text-lg mb-1">${formatCurrency(pkg.price_usd)}</p>
+            <div class="text-xs text-dark-400">
+                <i class="fas fa-coins mr-1"></i>
+                <span class="font-semibold">${formatNumber(pkg.in_game_amount)}</span>
+            </div>
+            ${isWarranty ? '<p class="text-[10px] text-yellow-400 mt-1"><i class="fas fa-shield-alt mr-1"></i>Warranty</p>' : ''}
+        `;
+
+        div.onclick = () => selectPackage(pkg);
+        grid.appendChild(div);
+    });
 }
 
 function selectPackage(pkg) {
-    // Store selected package
     selectedPackage = pkg;
 
-    // Update amount input
-    document.getElementById('customAmount').value = pkg.amount;
-
-    // Update UI
     document.querySelectorAll('.package-item').forEach(el => {
-        el.classList.remove('border-blue-500', 'bg-blue-50');
+        el.classList.remove('border-primary-500', 'bg-primary-500/10', 'ring-2', 'ring-primary-500/50');
     });
+
     const selectedEl = document.querySelector(`[data-package-id="${pkg.id}"]`);
     if (selectedEl) {
-        selectedEl.classList.add('border-blue-500', 'bg-blue-50');
+        selectedEl.classList.add('border-primary-500', 'ring-2', 'ring-primary-500/50');
+        if (pkg.package_type !== 'warranty') {
+            selectedEl.classList.add('bg-primary-500/10');
+        }
     }
 
-    updateTotalPrice();
-}
-
-function updateTotalPrice() {
-    const amount = parseFloat(document.getElementById('customAmount').value) || 0;
-    document.getElementById('totalUSD').textContent = formatCurrency(amount);
+    document.getElementById('packageSummary').classList.remove('hidden');
+    document.getElementById('selectedPackageName').textContent = pkg.name;
+    document.getElementById('selectedPackageAmount').textContent = formatNumber(pkg.in_game_amount);
+    document.getElementById('selectedPackageUnit').textContent = pkg.in_game_unit_label;
+    document.getElementById('totalUSD').textContent = formatCurrency(pkg.price_usd);
+    document.getElementById('submitBtn').disabled = false;
 }
 
 function loadWalletBalance() {
@@ -329,9 +371,7 @@ function loadWalletBalance() {
     if (!token) return;
 
     fetch('/api/wallets/', {
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
+        headers: { 'Authorization': `Bearer ${token}` }
     })
     .then(response => response.json())
     .then(data => {
@@ -345,165 +385,91 @@ function handleOrderSubmit(e) {
 
     const token = localStorage.getItem('access_token');
     if (!token) {
-        window.modal.warning(
-            'Yêu cầu đăng nhập',
-            'Vui lòng đăng nhập để tạo đơn hàng',
-            {
-                actions: [{
-                    label: 'Đăng nhập',
-                    style: 'primary',
-                    icon: 'fas fa-sign-in-alt',
-                    onClick: () => window.location.href = '/login/'
-                }]
-            }
-        );
+        window.modal?.warning('Login Required', 'Please login to create an order', {
+            actions: [{
+                label: 'Login',
+                style: 'primary',
+                onClick: () => window.location.href = '/login/'
+            }]
+        });
         return;
     }
 
-    // Validate form
+    if (!selectedPackage) {
+        window.modal?.error('Missing Information', 'Please select a package');
+        return;
+    }
+
     const gameUid = document.getElementById('gameUid').value.trim();
-    const amount = parseFloat(document.getElementById('customAmount').value);
+    const gameUsername = document.getElementById('gameUsername').value.trim();
+    const gamePassword = document.getElementById('gamePassword').value.trim();
+    const characterName = document.getElementById('characterName').value.trim();
     const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value;
 
-    // Validation
-    if (!gameUid) {
-        window.modal.error(
-            'Thiếu thông tin',
-            'Vui lòng nhập UID / ID nhân vật của bạn'
-        );
-        return;
-    }
-
-    if (!amount || amount <= 0) {
-        window.modal.error(
-            'Thiếu thông tin',
-            'Vui lòng chọn gói hoặc nhập số tiền nạp'
-        );
-        return;
-    }
-
-    if (amount < gameData.min_amount || amount > gameData.max_amount) {
-        window.modal.error(
-            'Số tiền không hợp lệ',
-            `Số tiền phải từ ${formatCurrency(gameData.min_amount)} đến ${formatCurrency(gameData.max_amount)}`
-        );
+    if (!gameUid || !gameUsername || !gamePassword || !characterName) {
+        window.modal?.error('Missing Information', 'Please fill in all required fields');
         return;
     }
 
     if (!paymentMethod) {
-        window.modal.error(
-            'Thiếu thông tin',
-            'Vui lòng chọn phương thức thanh toán'
-        );
+        window.modal?.error('Missing Information', 'Please select payment method');
         return;
     }
 
-    if (gameData.requires_server) {
-        const server = document.getElementById('serverSelect').value;
-        if (!server) {
-            window.modal.error(
-                'Thiếu thông tin',
-                'Vui lòng chọn server'
-            );
-            return;
-        }
+    const policyAgreement = document.getElementById('policyAgreement').checked;
+    if (!policyAgreement) {
+        window.modal?.error('Policy Agreement Required', 'Vui lòng đồng ý với chính sách bảo hành để tiếp tục');
+        return;
     }
 
-    // Build form data
     const formData = {
         game: gameData.id,
+        game_package: selectedPackage.id,
         game_uid: gameUid,
-        game_username: document.getElementById('gameUsername').value,
-        amount: amount,
+        game_username: gameUsername,
+        game_password: gamePassword,
+        character_name: characterName,
         customer_note: document.getElementById('customerNote').value,
         payment_method: paymentMethod
     };
 
-    // Add package_id if selected
-    if (selectedPackage) {
-        formData.game_package = selectedPackage.id;
-    }
-
-    // Add server if required
-    if (gameData.requires_server) {
-        formData.server = document.getElementById('serverSelect').value;
-    }
-
-    // Show confirmation modal BEFORE creating order
-    showOrderConfirmation(formData, paymentMethod, amount, gameUid);
+    showOrderConfirmation(formData, paymentMethod);
 }
 
-// New function: Show confirmation modal
-function showOrderConfirmation(formData, paymentMethod, amount, gameUid) {
-    const paymentMethodText = paymentMethod === 'wallet' ? 'Ví nội bộ' : 'Crypto (USDT TRC20)';
-    const packageInfo = selectedPackage ? `<p class="text-sm text-gray-700 mb-2"><strong>Gói:</strong> ${selectedPackage.name}</p>` : '';
+function showOrderConfirmation(formData, paymentMethod) {
+    const paymentMethodText = paymentMethod === 'wallet' ? 'Internal Wallet' : 'Crypto (USDT TRC20)';
 
-    window.modal.show({
+    window.modal?.show({
         type: 'question',
-        title: 'Xác nhận tạo đơn hàng',
-        message: 'Vui lòng kiểm tra thông tin trước khi xác nhận:',
+        title: 'Confirm Order',
+        message: 'Please review your information:',
         html: `
-            <div class="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <p class="text-sm text-gray-700 mb-2">
-                    <strong>Game:</strong> ${gameData.name}
-                </p>
-                ${packageInfo}
-                <p class="text-sm text-gray-700 mb-2">
-                    <strong>Số tiền:</strong> <span class="text-lg font-bold text-blue-600">${formatCurrency(amount)}</span>
-                </p>
-                <p class="text-sm text-gray-700 mb-2">
-                    <strong>UID:</strong> ${gameUid}
-                </p>
-                <p class="text-sm text-gray-700 mb-2">
-                    <strong>Phương thức thanh toán:</strong> ${paymentMethodText}
-                </p>
-            </div>
-            <div class="mt-3 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-                <p class="text-xs text-yellow-800">
-                    <i class="fas fa-info-circle mr-1"></i>
-                    Hệ thống sẽ tự động tạo đơn hàng và thanh toán ngay sau khi bạn xác nhận.
-                </p>
+            <div class="mt-4 p-4 bg-dark-700 rounded-lg">
+                <p class="text-sm text-dark-300 mb-2"><strong class="text-white">Game:</strong> ${gameData.name}</p>
+                <p class="text-sm text-dark-300 mb-2"><strong class="text-white">Package:</strong> ${selectedPackage.name}</p>
+                <p class="text-sm text-dark-300 mb-2"><strong class="text-white">Amount:</strong> <span class="text-primary-400 font-bold">${formatCurrency(selectedPackage.price_usd)}</span></p>
+                <p class="text-sm text-dark-300 mb-2"><strong class="text-white">Account:</strong> ${formData.game_username}</p>
+                <p class="text-sm text-dark-300"><strong class="text-white">Payment:</strong> ${paymentMethodText}</p>
             </div>
         `,
         actions: [
-            {
-                label: 'Hủy',
-                style: 'secondary',
-                icon: 'fas fa-times'
-            },
-            {
-                label: 'Xác nhận & Thanh toán ngay',
-                style: 'primary',
-                icon: 'fas fa-check-circle',
-                onClick: () => {
-                    createOrderAndPay(formData, paymentMethod);
-                }
-            }
+            { label: 'Cancel', style: 'secondary' },
+            { label: 'Confirm', style: 'primary', onClick: () => createOrder(formData, paymentMethod) }
         ]
     });
 }
 
-// New function: Create order and pay immediately
-function createOrderAndPay(formData, paymentMethod) {
+function createOrder(formData, paymentMethod) {
     const token = localStorage.getItem('access_token');
 
-    console.log('📤 Creating order and paying:', formData);
-
-    // Show loading modal
-    window.modal.show({
+    window.modal?.show({
         type: 'info',
-        title: 'Đang xử lý...',
-        message: 'Vui lòng đợi trong giây lát',
-        html: `
-            <div class="flex justify-center items-center py-4">
-                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            </div>
-            <p class="text-center text-sm text-gray-600 mt-2">Đang tạo đơn hàng và xử lý thanh toán...</p>
-        `,
-        actions: []  // No buttons during loading
+        title: 'Processing...',
+        message: 'Please wait',
+        html: '<div class="flex justify-center py-4"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div></div>',
+        actions: []
     });
 
-    // Step 1: Create order
     fetch('/api/orders/create/', {
         method: 'POST',
         headers: {
@@ -513,160 +479,56 @@ function createOrderAndPay(formData, paymentMethod) {
         body: JSON.stringify(formData)
     })
     .then(response => {
-        console.log('📥 Create order response:', response.status);
         if (!response.ok) {
             return response.json().then(err => {
-                throw new Error(err.detail || err.error || JSON.stringify(err) || 'Không thể tạo đơn hàng');
+                throw new Error(err.detail || err.error || 'Unable to create order');
             });
         }
         return response.json();
     })
     .then(orderData => {
-        console.log('✅ Order created:', orderData.order_id);
-
-        // Step 2: Pay immediately
         return fetch(`/api/orders/${orderData.order_id}/payment/`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                payment_method: paymentMethod
-            })
+            body: JSON.stringify({ payment_method: paymentMethod })
         })
         .then(payResponse => {
-            console.log('📥 Payment response:', payResponse.status);
             if (!payResponse.ok) {
                 return payResponse.json().then(err => {
-                    throw new Error(err.error || err.detail || 'Không thể thanh toán');
+                    throw new Error(err.error || 'Payment failed');
                 });
             }
             return payResponse.json();
         })
-        .then(payData => {
-            console.log('✅ Payment successful');
-            return { orderData, payData };
-        });
+        .then(payData => ({ orderData, payData }));
     })
     .then(({ orderData, payData }) => {
-        // Success! Show success modal
-        window.modal.success(
-            'Thanh toán thành công!',
-            `Đơn hàng của bạn đã được tạo và thanh toán thành công`,
-            {
-                html: `
-                    <div class="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
-                        <p class="text-sm text-gray-700 mb-2">
-                            <strong>Mã đơn hàng:</strong> <span class="font-mono text-xs">${orderData.order_id}</span>
-                        </p>
-                        <p class="text-sm text-gray-700 mb-2">
-                            <strong>Game:</strong> ${gameData.name}
-                        </p>
-                        <p class="text-sm text-gray-700 mb-2">
-                            <strong>Số tiền:</strong> ${formatCurrency(formData.amount)}
-                        </p>
-                        <p class="text-sm text-gray-700 mb-2">
-                            <strong>UID:</strong> ${formData.game_uid}
-                        </p>
-                        <p class="text-sm text-gray-700">
-                            <strong>Trạng thái:</strong> <span class="text-green-600 font-semibold">Đã thanh toán</span>
-                        </p>
-                    </div>
-                    <div class="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                        <p class="text-xs text-blue-800">
-                            <i class="fas fa-info-circle mr-1"></i>
-                            Đơn hàng của bạn đang được xử lý. Vui lòng kiểm tra chi tiết đơn hàng để theo dõi tiến trình.
-                        </p>
-                    </div>
-                `,
-                actions: [
-                    {
-                        label: 'Xem chi tiết đơn hàng',
-                        style: 'primary',
-                        icon: 'fas fa-eye',
-                        onClick: () => window.location.href = `/orders/${orderData.order_id}/`
-                    },
-                    {
-                        label: 'Tạo đơn mới',
-                        style: 'secondary',
-                        onClick: () => {
-                            // Reset form
-                            document.getElementById('orderForm').reset();
-                            selectedPackage = null;
-                            document.querySelectorAll('.package-item').forEach(el => {
-                                el.classList.remove('border-blue-500', 'bg-blue-50');
-                            });
-                            document.querySelectorAll('.payment-method div').forEach(el => {
-                                el.classList.remove('border-blue-500', 'bg-blue-50');
-                            });
-                            updateTotalPrice();
-                        }
-                    }
-                ]
-            }
-        );
+        if (paymentMethod === 'wallet') {
+            window.modal?.success('Payment Successful!', 'Your order is being processed', {
+                actions: [{
+                    label: 'View Order',
+                    style: 'primary',
+                    onClick: () => window.location.href = `/orders/${orderData.order_id}/`
+                }]
+            });
+        } else {
+            window.location.href = `/orders/${orderData.order_id}/?pay=crypto`;
+        }
     })
     .catch(error => {
-        console.error('❌ Error:', error);
-
-        // Show error modal
-        window.modal.error(
-            'Thanh toán thất bại',
-            error.message || 'Có lỗi xảy ra trong quá trình xử lý',
-            {
-                html: `
-                    <div class="mt-4 p-4 bg-red-50 rounded-lg border border-red-200">
-                        <p class="text-sm text-red-800">
-                            <strong>Chi tiết lỗi:</strong><br>
-                            ${error.message || 'Không xác định được lỗi'}
-                        </p>
-                    </div>
-                    <div class="mt-3 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-                        <p class="text-xs text-yellow-800">
-                            <i class="fas fa-exclamation-triangle mr-1"></i>
-                            Nếu lỗi vẫn tiếp diễn, vui lòng liên hệ support để được hỗ trợ.
-                        </p>
-                    </div>
-                `,
-                actions: [
-                    {
-                        label: 'Thử lại',
-                        style: 'primary',
-                        icon: 'fas fa-redo',
-                        onClick: () => {
-                            document.getElementById('orderForm').dispatchEvent(new Event('submit', { cancelable: true }));
-                        }
-                    },
-                    {
-                        label: 'Xem ví của tôi',
-                        style: 'secondary',
-                        icon: 'fas fa-wallet',
-                        onClick: () => window.location.href = '/wallet/deposits/'
-                    },
-                    {
-                        label: 'Đóng',
-                        style: 'secondary'
-                    }
-                ]
-            }
-        );
+        window.modal?.error('Error', error.message);
     });
 }
 
 function formatCurrency(amount) {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD'
-    }).format(amount);
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
 }
 
-// Helper function for i18n
-function t(key, defaultValue) {
-    if (window.i18n && window.i18n.t) {
-        return window.i18n.t(key);
-    }
-    return defaultValue;
+function formatNumber(num) {
+    return new Intl.NumberFormat('en-US').format(num);
 }
 </script>
 {% endblock %}

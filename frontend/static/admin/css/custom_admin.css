@@ -58,7 +58,7 @@ body {
    NAVBAR - Beautiful Gradient
    ============================================ */
 .main-header.navbar {
-    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%) !important;
+    background-color: rgba(167, 3, 3, 0.292) !important;
     border-bottom: none !important;
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15) !important;
     padding: 0.75rem 1rem !important;
@@ -334,7 +334,7 @@ body {
 }
 
 .table thead th {
-    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%) !important;
+    background-color: #2563eb !important;
     color: white !important;
     font-weight: 600 !important;
     border: none !important;
@@ -342,6 +342,41 @@ body {
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+}
+
+.table thead th a,
+.table thead th a:hover,
+.table thead th a:visited {
+    color: white !important;
+}
+
+/* Prevent table layout breaking */
+.table {
+    table-layout: auto !important;
+    width: 100% !important;
+}
+
+.table thead th {
+    white-space: nowrap;
+}
+
+.table tbody td {
+    white-space: nowrap;
+}
+
+/* Results table in Django admin */
+#result_list {
+    width: 100% !important;
+    overflow-x: auto !important;
+}
+
+#changelist-form {
+    overflow-x: auto !important;
+}
+
+#changelist table {
+    table-layout: auto !important;
+    min-width: 100% !important;
 }
 
 .table tbody tr {
@@ -993,6 +1028,120 @@ a:hover {
 
 .nav-sidebar .nav-item {
     animation: slideInLeft 0.3s ease-out;
+}
+
+/* ============================================
+   STATUS BADGES - Colored Status Indicators
+   ============================================ */
+/* Order Statuses */
+.field-status .badge-pending_payment,
+td.field-status:contains("pending_payment"),
+.status-pending_payment {
+    background-color: #fef3c7 !important;
+    color: #92400e !important;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    display: inline-block;
+}
+
+.field-status .badge-paid,
+.status-paid {
+    background-color: #dbeafe !important;
+    color: #1e40af !important;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    display: inline-block;
+}
+
+.field-status .badge-processing,
+.status-processing {
+    background-color: #e9d5ff !important;
+    color: #7c3aed !important;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    display: inline-block;
+}
+
+.field-status .badge-completed,
+.status-completed {
+    background-color: #d1fae5 !important;
+    color: #065f46 !important;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    display: inline-block;
+}
+
+.field-status .badge-canceled,
+.status-canceled {
+    background-color: #f3f4f6 !important;
+    color: #4b5563 !important;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    display: inline-block;
+}
+
+.field-status .badge-refunded,
+.status-refunded {
+    background-color: #fee2e2 !important;
+    color: #991b1b !important;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    display: inline-block;
+}
+
+/* Deposit Statuses */
+.field-status .badge-pending,
+.status-pending {
+    background-color: #fef3c7 !important;
+    color: #92400e !important;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    display: inline-block;
+}
+
+.field-status .badge-confirmed,
+.status-confirmed {
+    background-color: #d1fae5 !important;
+    color: #065f46 !important;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    display: inline-block;
+}
+
+.field-status .badge-rejected,
+.status-rejected {
+    background-color: #fee2e2 !important;
+    color: #991b1b !important;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    display: inline-block;
+}
+
+/* Generic colored status display in admin list */
+.field-colored_status span {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    display: inline-block;
 }
 
 /* ============================================

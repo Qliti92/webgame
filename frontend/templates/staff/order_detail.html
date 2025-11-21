@@ -1,0 +1,419 @@
+{% extends 'base.html' %}
+
+{% block title %}Staff - Order #{{ order_id }}{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto">
+    <!-- Breadcrumb -->
+    <nav class="text-sm mb-6">
+        <ol class="flex items-center space-x-2">
+            <li><a href="/staff/orders/" class="text-dark-400 hover:text-primary-400 transition-colors">Orders</a></li>
+            <li><i class="fas fa-chevron-right text-dark-600 text-xs"></i></li>
+            <li class="text-white">#{{ order_id }}</li>
+        </ol>
+    </nav>
+
+    <!-- Order Header -->
+    <div class="card p-6 mb-6">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-white mb-1">
+                    <i class="fas fa-receipt text-primary-400 mr-2"></i>
+                    Order #<span id="orderIdDisplay">{{ order_id }}</span>
+                </h1>
+                <p class="text-dark-400 text-sm" id="orderDate"></p>
+            </div>
+            <span id="orderStatus" class="mt-3 sm:mt-0 px-4 py-2 rounded-full text-sm font-semibold"></span>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <!-- Customer Info -->
+        <div class="card p-6">
+            <h2 class="text-lg font-bold text-white mb-4">
+                <i class="fas fa-user text-pink-400 mr-2"></i>
+                Customer Information
+            </h2>
+            <div class="space-y-3">
+                <div class="flex justify-between">
+                    <span class="text-dark-400">Email:</span>
+                    <span class="text-white" id="userEmail">-</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-dark-400">Game UID:</span>
+                    <span class="text-white font-mono" id="gameUid">-</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-dark-400">Username:</span>
+                    <span class="text-white" id="gameUsername">-</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-dark-400">Password:</span>
+                    <span class="text-white font-mono" id="gamePassword">-</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-dark-400">Character:</span>
+                    <span class="text-white" id="characterName">-</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Info -->
+        <div class="card p-6">
+            <h2 class="text-lg font-bold text-white mb-4">
+                <i class="fas fa-gamepad text-primary-400 mr-2"></i>
+                Order Information
+            </h2>
+            <div class="space-y-3">
+                <div class="flex justify-between">
+                    <span class="text-dark-400">Game:</span>
+                    <span class="text-white" id="gameName">-</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-dark-400">Package:</span>
+                    <span class="text-white" id="packageName">-</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-dark-400">Amount:</span>
+                    <span class="text-white" id="inGameAmount">-</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-dark-400">Payment:</span>
+                    <span class="text-white" id="paymentMethod">-</span>
+                </div>
+                <div class="flex justify-between pt-3 border-t border-dark-700">
+                    <span class="text-dark-400">Total:</span>
+                    <span class="text-xl font-bold text-primary-400" id="orderPrice">$0.00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Note -->
+    <div id="customerNoteSection" class="hidden mb-6">
+        <div class="card p-6 border-blue-500/50 bg-blue-500/5">
+            <h2 class="text-lg font-bold text-white mb-3">
+                <i class="fas fa-comment text-blue-400 mr-2"></i>
+                Customer Note
+            </h2>
+            <p id="customerNote" class="text-dark-300"></p>
+        </div>
+    </div>
+
+    <!-- Staff Actions -->
+    <div class="card p-6 mb-6">
+        <h2 class="text-lg font-bold text-white mb-4">
+            <i class="fas fa-cogs text-yellow-400 mr-2"></i>
+            Update Order
+        </h2>
+        <form id="updateOrderForm" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="form-label">Status</label>
+                    <select id="newStatus" class="form-input w-full">
+                        <option value="pending_payment">Pending Payment</option>
+                        <option value="paid">Paid</option>
+                        <option value="processing">Processing</option>
+                        <option value="completed">Completed</option>
+                        <option value="canceled">Canceled</option>
+                        <option value="refunded">Refunded</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label">Admin Note</label>
+                    <input type="text" id="adminNote" placeholder="Note for customer..." class="form-input w-full">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save mr-2"></i>Update Order
+            </button>
+        </form>
+    </div>
+
+    <!-- Attachments Section -->
+    <div class="card p-6 mb-6">
+        <h2 class="text-lg font-bold text-white mb-4">
+            <i class="fas fa-paperclip text-green-400 mr-2"></i>
+            Proof Attachments
+        </h2>
+
+        <!-- Upload Form -->
+        <form id="uploadForm" class="mb-6 p-4 bg-dark-800 rounded-xl">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="form-label">File</label>
+                    <input type="file" id="attachmentFile" accept="image/*" class="form-input w-full" required>
+                </div>
+                <div>
+                    <label class="form-label">Description</label>
+                    <input type="text" id="attachmentDesc" placeholder="e.g., Proof of top-up completed" class="form-input w-full">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-upload mr-2"></i>Upload Proof
+            </button>
+        </form>
+
+        <!-- Attachments List -->
+        <div id="attachmentsList" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            <p class="text-dark-400 col-span-full text-center py-4">No attachments yet</p>
+        </div>
+    </div>
+
+    <!-- Status History -->
+    <div class="card p-6 mb-6">
+        <h2 class="text-lg font-bold text-white mb-4">
+            <i class="fas fa-history text-purple-400 mr-2"></i>
+            Status History
+        </h2>
+        <div id="statusLogs" class="space-y-4"></div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex gap-4">
+        <a href="/staff/orders/" class="btn btn-secondary flex-1">
+            <i class="fas fa-arrow-left mr-2"></i>Back to Orders
+        </a>
+    </div>
+</div>
+
+<!-- Image Preview Modal -->
+<div id="imageModal" class="fixed inset-0 bg-black/90 hidden flex items-center justify-center z-50 p-4" onclick="closeImageModal()">
+    <img id="modalImage" src="" alt="Preview" class="max-w-full max-h-full object-contain">
+</div>
+
+<script>
+const orderId = '{{ order_id }}';
+let orderData = null;
+const token = localStorage.getItem('access_token');
+
+if (!token) {
+    window.location.href = '/login/';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadOrderDetail();
+    document.getElementById('updateOrderForm').addEventListener('submit', handleUpdate);
+    document.getElementById('uploadForm').addEventListener('submit', handleUpload);
+});
+
+function loadOrderDetail() {
+    fetch(`/api/orders/staff/${orderId}/`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+    })
+    .then(response => {
+        if (response.status === 403) {
+            window.modal?.error('Access Denied', 'You do not have permission');
+            setTimeout(() => window.location.href = '/dashboard/', 2000);
+            throw new Error('Forbidden');
+        }
+        if (!response.ok) throw new Error('Order not found');
+        return response.json();
+    })
+    .then(order => {
+        orderData = order;
+        displayOrderDetail(order);
+        loadAttachments();
+    })
+    .catch(error => {
+        if (error.message !== 'Forbidden') {
+            window.modal?.error('Error', 'Unable to load order');
+        }
+    });
+}
+
+function displayOrderDetail(order) {
+    document.getElementById('orderIdDisplay').textContent = order.order_id;
+    document.getElementById('orderDate').textContent = new Date(order.created_at).toLocaleString();
+
+    const statusConfig = {
+        'pending_payment': { bg: 'bg-yellow-500/20', text: 'text-yellow-400', label: 'Pending Payment' },
+        'paid': { bg: 'bg-blue-500/20', text: 'text-blue-400', label: 'Paid' },
+        'processing': { bg: 'bg-purple-500/20', text: 'text-purple-400', label: 'Processing' },
+        'completed': { bg: 'bg-green-500/20', text: 'text-green-400', label: 'Completed' },
+        'canceled': { bg: 'bg-dark-600', text: 'text-dark-400', label: 'Canceled' },
+        'refunded': { bg: 'bg-red-500/20', text: 'text-red-400', label: 'Refunded' }
+    };
+
+    const status = statusConfig[order.status] || statusConfig['pending_payment'];
+    const statusEl = document.getElementById('orderStatus');
+    statusEl.className = `px-4 py-2 rounded-full text-sm font-semibold ${status.bg} ${status.text}`;
+    statusEl.textContent = status.label;
+
+    // Customer info
+    document.getElementById('userEmail').textContent = order.user_email;
+    document.getElementById('gameUid').textContent = order.game_uid;
+    document.getElementById('gameUsername').textContent = order.game_username || '-';
+    document.getElementById('gamePassword').textContent = order.game_password || '-';
+    document.getElementById('characterName').textContent = order.character_name || '-';
+
+    // Order info
+    document.getElementById('gameName').textContent = order.game_name;
+    document.getElementById('packageName').textContent = order.package_info?.name || '-';
+    document.getElementById('inGameAmount').textContent = order.package_info
+        ? `${order.package_info.in_game_amount} ${order.package_info.in_game_unit}`
+        : '-';
+    document.getElementById('paymentMethod').textContent = order.payment_method === 'wallet' ? 'Wallet' : 'Crypto';
+    document.getElementById('orderPrice').textContent = `$${parseFloat(order.price).toFixed(2)}`;
+
+    // Customer note
+    if (order.customer_note) {
+        document.getElementById('customerNote').textContent = order.customer_note;
+        document.getElementById('customerNoteSection').classList.remove('hidden');
+    }
+
+    // Update form
+    document.getElementById('newStatus').value = order.status;
+    document.getElementById('adminNote').value = order.admin_note || '';
+
+    // Status logs
+    if (order.status_logs) displayStatusLogs(order.status_logs);
+}
+
+function displayStatusLogs(logs) {
+    const container = document.getElementById('statusLogs');
+    if (!logs || logs.length === 0) {
+        container.innerHTML = '<p class="text-dark-400 text-sm">No history available</p>';
+        return;
+    }
+
+    container.innerHTML = logs.map((log, index) => `
+        <div class="flex items-start">
+            <div class="w-2 h-2 mt-2 rounded-full ${index === 0 ? 'bg-primary-500' : 'bg-dark-600'}"></div>
+            <div class="ml-4 flex-1">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="font-semibold text-white text-sm">${log.note}</p>
+                        <p class="text-xs text-dark-500">${log.changed_by_email || 'System'}</p>
+                    </div>
+                    <p class="text-xs text-dark-500">${new Date(log.created_at).toLocaleString()}</p>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function loadAttachments() {
+    fetch(`/api/orders/${orderId}/attachments/`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+    })
+    .then(r => r.json())
+    .then(data => {
+        // Handle paginated response
+        const attachments = data.results || data;
+        displayAttachments(attachments);
+    })
+    .catch(e => console.error(e));
+}
+
+function displayAttachments(attachments) {
+    const container = document.getElementById('attachmentsList');
+
+    if (!attachments || attachments.length === 0) {
+        container.innerHTML = '<p class="text-dark-400 col-span-full text-center py-4">No attachments yet</p>';
+        return;
+    }
+
+    container.innerHTML = attachments.map(att => `
+        <div class="relative group">
+            <img src="${att.file_url}" alt="${att.description || 'Attachment'}"
+                 class="w-full h-32 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
+                 onclick="showImage('${att.file_url}')">
+            <div class="absolute bottom-0 left-0 right-0 bg-black/70 p-2 rounded-b-lg">
+                <p class="text-xs text-white truncate">${att.description || 'No description'}</p>
+                <p class="text-xs text-dark-400">${new Date(att.created_at).toLocaleDateString()}</p>
+            </div>
+            <button onclick="deleteAttachment(${att.id})"
+                    class="absolute top-2 right-2 bg-red-500 text-white p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                <i class="fas fa-trash text-xs"></i>
+            </button>
+        </div>
+    `).join('');
+}
+
+function handleUpdate(e) {
+    e.preventDefault();
+
+    const data = {
+        status: document.getElementById('newStatus').value,
+        admin_note: document.getElementById('adminNote').value
+    };
+
+    fetch(`/api/orders/staff/${orderId}/`, {
+        method: 'PATCH',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(r => {
+        if (!r.ok) throw new Error('Update failed');
+        return r.json();
+    })
+    .then(result => {
+        window.modal?.success('Success', 'Order updated successfully');
+        loadOrderDetail();
+    })
+    .catch(e => window.modal?.error('Error', e.message));
+}
+
+function handleUpload(e) {
+    e.preventDefault();
+
+    const fileInput = document.getElementById('attachmentFile');
+    const descInput = document.getElementById('attachmentDesc');
+
+    if (!fileInput.files[0]) {
+        window.modal?.error('Error', 'Please select a file');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+    formData.append('description', descInput.value);
+
+    fetch(`/api/orders/staff/${orderId}/attachments/upload/`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
+        body: formData
+    })
+    .then(r => {
+        if (!r.ok) throw new Error('Upload failed');
+        return r.json();
+    })
+    .then(result => {
+        window.modal?.success('Success', 'Attachment uploaded successfully');
+        fileInput.value = '';
+        descInput.value = '';
+        loadAttachments();
+    })
+    .catch(e => window.modal?.error('Error', e.message));
+}
+
+function deleteAttachment(id) {
+    if (!confirm('Delete this attachment?')) return;
+
+    fetch(`/api/orders/staff/attachments/${id}/delete/`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+    })
+    .then(r => {
+        if (!r.ok) throw new Error('Delete failed');
+        loadAttachments();
+    })
+    .catch(e => window.modal?.error('Error', e.message));
+}
+
+function showImage(url) {
+    document.getElementById('modalImage').src = url;
+    document.getElementById('imageModal').classList.remove('hidden');
+}
+
+function closeImageModal() {
+    document.getElementById('imageModal').classList.add('hidden');
+}
+</script>
+{% endblock %}

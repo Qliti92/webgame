@@ -1,0 +1,289 @@
+{% extends 'base.html' %}
+
+{% block title %}Notifications - TOPUPGAMEMOBILE{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-white">
+            <i class="fas fa-bell mr-3 text-primary-400"></i>Notifications
+        </h1>
+        <button id="markAllReadBtn" class="px-4 py-2 text-sm bg-dark-800 hover:bg-dark-700 text-dark-300 rounded-lg transition-colors">
+            <i class="fas fa-check-double mr-2"></i>Mark all as read
+        </button>
+    </div>
+
+    <!-- Filter tabs -->
+    <div class="flex space-x-2 mb-6 overflow-x-auto pb-2">
+        <button class="filter-btn active px-4 py-2 rounded-lg text-sm font-medium transition-colors" data-filter="all">
+            All
+        </button>
+        <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium transition-colors" data-filter="ORDER">
+            <i class="fas fa-shopping-cart mr-1"></i>Orders
+        </button>
+        <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium transition-colors" data-filter="DEPOSIT">
+            <i class="fas fa-arrow-down mr-1"></i>Deposits
+        </button>
+        <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium transition-colors" data-filter="WITHDRAW">
+            <i class="fas fa-arrow-up mr-1"></i>Withdrawals
+        </button>
+        <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium transition-colors" data-filter="SYSTEM">
+            <i class="fas fa-info-circle mr-1"></i>System
+        </button>
+    </div>
+
+    <!-- Notifications list -->
+    <div id="notificationsList" class="space-y-3">
+        <div class="text-center py-12 text-dark-400">
+            <i class="fas fa-spinner fa-spin text-3xl mb-3"></i>
+            <p>Loading notifications...</p>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div id="pagination" class="flex justify-center items-center space-x-2 mt-6 hidden">
+        <button id="prevPage" class="px-4 py-2 bg-dark-800 hover:bg-dark-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <span id="pageInfo" class="text-dark-400 px-4">Page 1 of 1</span>
+        <button id="nextPage" class="px-4 py-2 bg-dark-800 hover:bg-dark-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+</div>
+
+<style>
+.filter-btn {
+    background-color: rgb(30, 41, 59);
+    color: rgb(148, 163, 184);
+}
+
+.filter-btn:hover {
+    background-color: rgb(51, 65, 85);
+}
+
+.filter-btn.active {
+    background-color: rgb(99, 102, 241);
+    color: white;
+}
+
+.notification-card {
+    transition: all 0.2s ease;
+}
+
+.notification-card:hover {
+    transform: translateX(4px);
+}
+
+.notification-card.unread {
+    border-left: 3px solid rgb(99, 102, 241);
+}
+</style>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+        window.location.href = '/login/';
+        return;
+    }
+
+    let currentPage = 1;
+    let currentFilter = 'all';
+    let totalPages = 1;
+
+    const notificationsList = document.getElementById('notificationsList');
+    const pagination = document.getElementById('pagination');
+    const pageInfo = document.getElementById('pageInfo');
+    const prevBtn = document.getElementById('prevPage');
+    const nextBtn = document.getElementById('nextPage');
+    const markAllBtn = document.getElementById('markAllReadBtn');
+
+    // Filter buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentFilter = btn.dataset.filter;
+            currentPage = 1;
+            loadNotifications();
+        });
+    });
+
+    // Pagination
+    prevBtn.addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            loadNotifications();
+        }
+    });
+
+    nextBtn.addEventListener('click', () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            loadNotifications();
+        }
+    });
+
+    // Mark all as read
+    markAllBtn.addEventListener('click', async () => {
+        try {
+            const response = await fetch('/api/notifications/mark-all-read/', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                loadNotifications();
+                // Update badge in header
+                if (window.notificationManager) {
+                    window.notificationManager.updateBadge(0);
+                }
+            }
+        } catch (error) {
+            console.error('Failed to mark all as read:', error);
+        }
+    });
+
+    async function loadNotifications() {
+        try {
+            let url = `/api/notifications/?page=${currentPage}`;
+            if (currentFilter !== 'all') {
+                url += `&notification_type=${currentFilter}`;
+            }
+
+            const response = await fetch(url, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                renderNotifications(data.results);
+
+                // Update pagination
+                totalPages = Math.ceil(data.count / 20) || 1;
+                pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+                prevBtn.disabled = currentPage <= 1;
+                nextBtn.disabled = currentPage >= totalPages;
+
+                if (data.count > 20) {
+                    pagination.classList.remove('hidden');
+                } else {
+                    pagination.classList.add('hidden');
+                }
+            }
+        } catch (error) {
+            console.error('Failed to load notifications:', error);
+            notificationsList.innerHTML = `
+                <div class="text-center py-12 text-red-400">
+                    <i class="fas fa-exclamation-triangle text-3xl mb-3"></i>
+                    <p>Failed to load notifications</p>
+                </div>
+            `;
+        }
+    }
+
+    function renderNotifications(notifications) {
+        if (notifications.length === 0) {
+            notificationsList.innerHTML = `
+                <div class="text-center py-12 text-dark-400">
+                    <i class="fas fa-bell-slash text-4xl mb-3"></i>
+                    <p>No notifications found</p>
+                </div>
+            `;
+            return;
+        }
+
+        notificationsList.innerHTML = notifications.map(notification => `
+            <div class="notification-card bg-dark-800 rounded-lg p-4 cursor-pointer ${!notification.is_read ? 'unread' : ''}"
+                 data-id="${notification.id}"
+                 data-order-id="${notification.order_id || ''}"
+                 data-transaction-id="${notification.transaction_id || ''}">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 mr-4 mt-1">
+                        ${getNotificationIcon(notification.notification_type)}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-start mb-1">
+                            <h3 class="text-white font-medium ${!notification.is_read ? 'font-semibold' : ''}">${notification.title}</h3>
+                            <span class="text-xs text-dark-500 ml-2 whitespace-nowrap">${notification.time_ago}</span>
+                        </div>
+                        <p class="text-dark-400 text-sm">${notification.message}</p>
+                        <div class="flex items-center mt-2 space-x-3">
+                            <span class="text-xs px-2 py-1 rounded ${getTypeBadgeClass(notification.notification_type)}">
+                                ${notification.notification_type}
+                            </span>
+                            ${notification.is_important ? '<span class="text-xs text-yellow-500"><i class="fas fa-star"></i> Important</span>' : ''}
+                            ${!notification.is_read ? '<span class="text-xs text-primary-400"><i class="fas fa-circle text-[6px]"></i> Unread</span>' : ''}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        // Add click handlers
+        notificationsList.querySelectorAll('.notification-card').forEach(card => {
+            card.addEventListener('click', async () => {
+                const id = card.dataset.id;
+                const orderId = card.dataset.orderId;
+                const transactionId = card.dataset.transactionId;
+
+                // Mark as read
+                try {
+                    await fetch('/api/notifications/mark-as-read/', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ notification_ids: [parseInt(id)] })
+                    });
+                } catch (e) {}
+
+                // Navigate
+                if (orderId) {
+                    window.location.href = `/orders/${orderId}/`;
+                } else if (transactionId) {
+                    window.location.href = `/wallet/deposits/`;
+                } else {
+                    // Just reload to show as read
+                    loadNotifications();
+                }
+            });
+        });
+    }
+
+    function getNotificationIcon(type) {
+        const icons = {
+            'ORDER': '<i class="fas fa-shopping-cart text-blue-400 text-lg"></i>',
+            'DEPOSIT': '<i class="fas fa-arrow-down text-green-400 text-lg"></i>',
+            'WITHDRAW': '<i class="fas fa-arrow-up text-yellow-400 text-lg"></i>',
+            'SYSTEM': '<i class="fas fa-info-circle text-purple-400 text-lg"></i>'
+        };
+        return icons[type] || icons['SYSTEM'];
+    }
+
+    function getTypeBadgeClass(type) {
+        const classes = {
+            'ORDER': 'bg-blue-500/20 text-blue-400',
+            'DEPOSIT': 'bg-green-500/20 text-green-400',
+            'WITHDRAW': 'bg-yellow-500/20 text-yellow-400',
+            'SYSTEM': 'bg-purple-500/20 text-purple-400'
+        };
+        return classes[type] || classes['SYSTEM'];
+    }
+
+    // Initial load
+    loadNotifications();
+});
+</script>
+{% endblock %}

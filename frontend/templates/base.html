@@ -1,115 +1,399 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Game TopUp{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!-- Primary Meta Tags -->
+    <title>{% block title %}TOPUPGAMEMOBILE - Fast & Secure Game Top-Up Service{% endblock %}</title>
+    <meta name="title" content="{% block meta_title %}TOPUPGAMEMOBILE - Fast & Secure Game Top-Up Service{% endblock %}">
+    <meta name="description" content="{% block meta_description %}Professional game top-up service with instant delivery. Support 50+ popular games including PUBG, Mobile Legends, Free Fire. Secure payment via USDT TRC20. 24/7 customer support.{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}game top-up, game recharge, PUBG UC, Mobile Legends diamonds, Free Fire diamonds, game currency, instant delivery, USDT payment, crypto payment{% endblock %}">
+    <meta name="author" content="TOPUPGAMEMOBILE">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="English">
+    <meta name="revisit-after" content="7 days">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:title" content="{% block og_title %}TOPUPGAMEMOBILE - Fast & Secure Game Top-Up{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Professional game top-up service with instant delivery. Support 50+ games. Secure USDT payment.{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}/static/images/og-image.png{% endblock %}">
+    <meta property="og:site_name" content="TOPUPGAMEMOBILE">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ request.build_absolute_uri }}">
+    <meta property="twitter:title" content="{% block twitter_title %}TOPUPGAMEMOBILE - Game Top-Up Service{% endblock %}">
+    <meta property="twitter:description" content="{% block twitter_description %}Fast & secure game top-up. 50+ games. Instant delivery. USDT payment.{% endblock %}">
+    <meta property="twitter:image" content="{% block twitter_image %}/static/images/og-image.png{% endblock %}">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+
+    <!-- Favicon -->
+    {% if site_appearance.favicon %}
+    <link rel="icon" type="image/png" href="{{ site_appearance.favicon.url }}">
+    <link rel="apple-touch-icon" href="{{ site_appearance.favicon.url }}">
+    {% else %}
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/images/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/static/images/favicon.png">
+    {% endif %}
+
+    <!-- Preconnect for Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Load i18n system -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            200: '#c7d2fe',
+                            300: '#a5b4fc',
+                            400: '#818cf8',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            900: '#312e81',
+                        },
+                        dark: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <!-- Font Awesome - Offline -->
+    <link rel="stylesheet" href="/static/css/fontawesome.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/main.css">
+
+    <!-- Load i18n -->
     <script src="/static/js/i18n.js"></script>
+
     <!-- Load unified modal system -->
     <script src="/static/js/modal.js"></script>
-    {% block extra_css %}{% endblock %}
-</head>
-<body class="bg-gray-100">
-    <!-- Navbar -->
-    <nav class="bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg">
-        <div class="container mx-auto px-4 py-4">
-            <div class="flex justify-between items-center">
-                <a href="/" class="text-2xl font-bold flex items-center">
-                    <i class="fas fa-gamepad mr-2"></i>
-                    Game TopUp
-                </a>
-                <div class="flex items-center space-x-6">
-                    <a href="/" class="hover:text-gray-200 transition">
-                        <i class="fas fa-home mr-1"></i> <span data-i18n="nav.home">Home</span>
-                    </a>
-                    <a href="/games/" class="hover:text-gray-200 transition">
-                        <i class="fas fa-gamepad mr-1"></i> <span data-i18n="nav.games">Games</span>
-                    </a>
-                    <a href="/dashboard/" id="dashboardLink" class="hover:text-gray-200 transition hidden">
-                        <i class="fas fa-tachometer-alt mr-1"></i> <span data-i18n="nav.dashboard">Dashboard</span>
-                    </a>
-                    <a href="/login/" id="loginLink" class="hover:text-gray-200 transition">
-                        <i class="fas fa-sign-in-alt mr-1"></i> <span data-i18n="nav.login">Login</span>
-                    </a>
-                    <a href="/register/" id="registerLink" class="hover:text-gray-200 transition">
-                        <i class="fas fa-user-plus mr-1"></i> <span data-i18n="nav.register">Register</span>
-                    </a>
-                    <button id="logoutBtn" class="hover:text-gray-200 transition hidden" onclick="handleLogout()">
-                        <i class="fas fa-sign-out-alt mr-1"></i> <span data-i18n="nav.logout">Logout</span>
-                    </button>
 
-                    <!-- Language Switcher -->
-                    <div class="relative inline-block" id="languageDropdown">
-                        <button onclick="toggleLanguageMenu()" class="flex items-center hover:text-gray-200 transition">
-                            <i class="fas fa-globe mr-2"></i>
-                            <span id="currentLanguage">VI</span>
-                            <i class="fas fa-chevron-down ml-1 text-xs"></i>
-                        </button>
-                        <div id="languageMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                            <a href="#" onclick="changeLanguageTo('vi'); return false;" class="flex items-center px-4 py-2 text-gray-800 hover:bg-blue-50 transition">
-                                <span class="text-2xl mr-3">🇻🇳</span>
-                                <span class="font-medium">Tiếng Việt</span>
-                            </a>
-                            <a href="#" onclick="changeLanguageTo('en'); return false;" class="flex items-center px-4 py-2 text-gray-800 hover:bg-blue-50 transition">
-                                <span class="text-2xl mr-3">🇺🇸</span>
-                                <span class="font-medium">English</span>
-                            </a>
-                            <a href="#" onclick="changeLanguageTo('zh'); return false;" class="flex items-center px-4 py-2 text-gray-800 hover:bg-blue-50 transition">
-                                <span class="text-2xl mr-3">🇨🇳</span>
-                                <span class="font-medium">中文</span>
-                            </a>
+    <!-- Load notifications system -->
+    <script src="/static/js/notifications.js"></script>
+
+    {% block extra_css %}{% endblock %}
+
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "TOPUPGAMEMOBILE",
+        "url": "{{ request.scheme }}://{{ request.get_host }}/",
+        "description": "Professional game top-up service with instant delivery",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "{{ request.scheme }}://{{ request.get_host }}/games/?search={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+
+    {% block extra_schema %}{% endblock %}
+</head>
+<body class="bg-dark-900 text-dark-100 min-h-screen flex flex-col">
+    <!-- Skip to Content (Accessibility) -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-primary-600 text-white px-4 py-2 rounded-lg z-50">
+        Skip to content
+    </a>
+
+    <!-- Header / Navigation -->
+    <header class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-md border-b border-dark-700">
+        <nav class="container mx-auto px-4" aria-label="Main navigation">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <a href="/" class="flex items-center space-x-2 group">
+                    {% if site_appearance.logo %}
+                        <img src="{{ site_appearance.logo.url }}" alt="TOPUPGAMEMOBILE Logo" class="h-10 w-auto">
+                    {% else %}
+                        <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-pink-500 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-gamepad text-white text-lg"></i>
                         </div>
-                    </div>
+                    {% endif %}
+                    <span class="text-xl font-bold bg-gradient-to-r from-primary-400 to-pink-400 bg-clip-text text-transparent hidden sm:block">
+                        TopUpGameMobile.Com
+                    </span>
+                </a>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-1">
+                    <a href="/" class="nav-link px-4 py-2 rounded-lg hover:bg-dark-800 transition-colors">
+                        <i class="fas fa-home mr-2"></i>Home
+                    </a>
+                    <a href="/games/" class="nav-link px-4 py-2 rounded-lg hover:bg-dark-800 transition-colors">
+                        <i class="fas fa-gamepad mr-2"></i>Games
+                    </a>
+                    <a href="/dashboard/" id="dashboardLink" class="nav-link px-4 py-2 rounded-lg hover:bg-dark-800 transition-colors hidden">
+                        <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+                    </a>
+                    <a href="/staff/orders/" id="staffLink" class="nav-link px-4 py-2 rounded-lg hover:bg-dark-800 transition-colors text-green-400 hidden">
+                        <i class="fas fa-clipboard-list mr-2"></i>Staff
+                    </a>
+                    <a href="/admin/" id="adminLink" class="nav-link px-4 py-2 rounded-lg hover:bg-dark-800 transition-colors text-yellow-400 hidden">
+                        <i class="fas fa-cog mr-2"></i>Admin
+                    </a>
                 </div>
+
+                <!-- Desktop Auth Buttons -->
+                <div class="hidden md:flex items-center space-x-3">
+                    <a href="/login/" id="loginLink" class="px-4 py-2 text-dark-300 hover:text-white transition-colors">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Login
+                    </a>
+                    <a href="/register/" id="registerLink" class="px-4 py-2 bg-gradient-to-r from-primary-600 to-pink-600 text-white rounded-lg hover:from-primary-500 hover:to-pink-500 transition-all transform hover:scale-105 shadow-lg">
+                        <i class="fas fa-user-plus mr-2"></i>Register
+                    </a>
+                    <button id="logoutBtn" onclick="handleLogout()" class="hidden px-4 py-2 text-dark-300 hover:text-white transition-colors">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </button>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg hover:bg-dark-800 transition-colors" aria-label="Toggle menu" aria-expanded="false">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenuOverlay" class="mobile-menu-overlay md:hidden"></div>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="mobile-menu md:hidden">
+        <div class="p-6">
+            <!-- Mobile Menu Header -->
+            <div class="flex justify-between items-center mb-8">
+                <span class="text-xl font-bold text-white">Menu</span>
+                <button id="closeMobileMenu" class="p-2 rounded-lg hover:bg-dark-700 transition-colors" aria-label="Close menu">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Navigation Links -->
+            <nav class="space-y-2" aria-label="Mobile navigation">
+                <a href="/" class="block px-4 py-3 rounded-lg hover:bg-dark-700 transition-colors">
+                    <i class="fas fa-home mr-3 text-primary-400"></i>Home
+                </a>
+                <a href="/games/" class="block px-4 py-3 rounded-lg hover:bg-dark-700 transition-colors">
+                    <i class="fas fa-gamepad mr-3 text-primary-400"></i>Games
+                </a>
+                <a href="/dashboard/" id="dashboardLinkMobile" class="hidden px-4 py-3 rounded-lg hover:bg-dark-700 transition-colors">
+                    <i class="fas fa-tachometer-alt mr-3 text-primary-400"></i>Dashboard
+                </a>
+                <a href="/staff/orders/" id="staffLinkMobile" class="hidden px-4 py-3 rounded-lg hover:bg-dark-700 transition-colors text-green-400">
+                    <i class="fas fa-clipboard-list mr-3 text-green-400"></i>Staff
+                </a>
+                <a href="/admin/" id="adminLinkMobile" class="hidden px-4 py-3 rounded-lg hover:bg-dark-700 transition-colors text-yellow-400">
+                    <i class="fas fa-cog mr-3 text-yellow-400"></i>Admin
+                </a>
+            </nav>
+
+            <!-- Mobile Auth Buttons -->
+            <div class="mt-8 pt-8 border-t border-dark-700 space-y-3">
+                <a href="/login/" id="loginLinkMobile" class="block w-full px-4 py-3 text-center rounded-lg border border-dark-600 hover:bg-dark-700 transition-colors">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Login
+                </a>
+                <a href="/register/" id="registerLinkMobile" class="block w-full px-4 py-3 text-center rounded-lg bg-gradient-to-r from-primary-600 to-pink-600 text-white hover:from-primary-500 hover:to-pink-500 transition-all">
+                    <i class="fas fa-user-plus mr-2"></i>Register
+                </a>
+                <button id="logoutBtnMobile" onclick="handleLogout()" class="hidden w-full px-4 py-3 text-center rounded-lg border border-red-600 text-red-400 hover:bg-red-600 hover:text-white transition-colors">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                </button>
             </div>
         </div>
-    </nav>
+    </div>
 
     <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8">
+    <main id="main-content" class="flex-grow container mx-auto px-4 py-8">
         {% block content %}{% endblock %}
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-800 text-white mt-16">
-        <div class="container mx-auto px-4 py-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div>
-                    <h3 class="text-xl font-bold mb-4" data-i18n="footer.about">Game TopUp</h3>
-                    <p class="text-gray-400" data-i18n="footer.aboutDesc">Hệ thống nạp game tự động, an toàn và nhanh chóng.</p>
-                </div>
-                <div>
-                    <h3 class="text-xl font-bold mb-4" data-i18n="footer.contact">Liên hệ</h3>
-                    <p class="text-gray-400"><span data-i18n="footer.email">Email</span>: support@gametopup.com</p>
-                    <p class="text-gray-400"><span data-i18n="footer.telegram">Telegram</span>: @gametopup</p>
-                </div>
-                <div>
-                    <h3 class="text-xl font-bold mb-4" data-i18n="footer.payment">Thanh toán</h3>
-                    <p class="text-gray-400">
-                        <i class="fab fa-bitcoin mr-2"></i> USDT TRC20
+    <footer class="footer mt-auto">
+        <div class="container mx-auto px-4 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Brand -->
+                <div class="lg:col-span-1">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-pink-500 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-gamepad text-white"></i>
+                        </div>
+                        <span class="text-xl font-bold text-white">TUGM</span>
+                    </div>
+                    <p class="text-dark-400 text-sm leading-relaxed">
+                        Professional game top-up service with instant delivery. Trusted by thousands of gamers worldwide.
                     </p>
-                    <p class="text-gray-400">
-                        <i class="fas fa-wallet mr-2"></i> <span data-i18n="footer.internalWallet">Ví nội bộ</span>
-                    </p>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-white font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="/" class="footer-link text-sm">Home</a></li>
+                        <li><a href="/games/" class="footer-link text-sm">All Games</a></li>
+                        <li><a href="/dashboard/" class="footer-link text-sm">Dashboard</a></li>
+                        <li><a href="/wallet/deposit/" class="footer-link text-sm">Deposit</a></li>
+                    </ul>
+                    <h3 class="text-white font-semibold mb-4 mt-6">Legal</h3>
+                    <ul class="space-y-2">
+                        <li><a href="/terms/" class="footer-link text-sm">Terms of Service</a></li>
+                        <li><a href="/privacy/" class="footer-link text-sm">Privacy Policy</a></li>
+                        <li><a href="/refund/" class="footer-link text-sm">Refund Policy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Support -->
+                <div>
+                    <h3 class="text-white font-semibold mb-4">Support</h3>
+                    <ul class="space-y-2">
+                        <li class="text-dark-400 text-sm">
+                            <i class="fas fa-envelope mr-2 text-primary-400"></i>
+                            support@gametopup.com
+                        </li>
+                        <li class="text-dark-400 text-sm">
+                            <i class="fab fa-telegram mr-2 text-primary-400"></i>
+                            @gametopup
+                        </li>
+                        <li class="text-dark-400 text-sm">
+                            <i class="fas fa-clock mr-2 text-primary-400"></i>
+                            24/7 Support
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Payment Methods -->
+                <div>
+                    <h3 class="text-white font-semibold mb-4">Payment Methods</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center space-x-2 text-sm text-dark-400">
+                            <i class="fab fa-bitcoin text-yellow-500 text-lg"></i>
+                            <span>USDT TRC20</span>
+                        </div>
+                        <div class="flex items-center space-x-2 text-sm text-dark-400">
+                            <i class="fas fa-wallet text-green-500 text-lg"></i>
+                            <span>Internal Wallet</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-                <p>&copy; 2024 Game TopUp. <span data-i18n="footer.copyright">All rights reserved.</span></p>
+
+            <!-- Bottom Footer -->
+            <div class="border-t border-dark-700 mt-8 pt-8 flex flex-col sm:flex-row justify-between items-center">
+                <p class="text-dark-500 text-sm">
+                    &copy; 2024 TOPUPGAMEMOBILE. All rights reserved.
+                </p>
+                <div class="flex space-x-4 mt-4 sm:mt-0">
+                    <a href="#" class="text-dark-500 hover:text-primary-400 transition-colors">
+                        <i class="fab fa-facebook text-lg"></i>
+                    </a>
+                    <a href="#" class="text-dark-500 hover:text-primary-400 transition-colors">
+                        <i class="fab fa-twitter text-lg"></i>
+                    </a>
+                    <a href="#" class="text-dark-500 hover:text-primary-400 transition-colors">
+                        <i class="fab fa-discord text-lg"></i>
+                    </a>
+                </div>
             </div>
         </div>
+
+        <!-- Tawk.to Chat Widget -->
+        <script type="text/javascript">
+        var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+        (function(){
+        var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+        s1.async=true;
+        s1.src='https://embed.tawk.to/691d889416325219597dfae0/1jadlr143';
+        s1.charset='UTF-8';
+        s1.setAttribute('crossorigin','*');
+        s0.parentNode.insertBefore(s1,s0);
+        })();
+        </script>
     </footer>
 
+    <!-- Core Scripts -->
     <script>
-    // Check if user is logged in and update navbar
+    // Mobile Menu Toggle
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+    const closeMobileMenu = document.getElementById('closeMobileMenu');
+
+    function openMobileMenu() {
+        mobileMenu.classList.add('active');
+        mobileMenuOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        mobileMenuBtn.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeMobileMenuFn() {
+        mobileMenu.classList.remove('active');
+        mobileMenuOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+        mobileMenuBtn.setAttribute('aria-expanded', 'false');
+    }
+
+    mobileMenuBtn?.addEventListener('click', openMobileMenu);
+    closeMobileMenu?.addEventListener('click', closeMobileMenuFn);
+    mobileMenuOverlay?.addEventListener('click', closeMobileMenuFn);
+
+    // Auth State Management
     document.addEventListener('DOMContentLoaded', function() {
         const token = localStorage.getItem('access_token');
+        const userInfo = JSON.parse(localStorage.getItem('user_info') || '{}');
+
+        // Desktop elements
         const dashboardLink = document.getElementById('dashboardLink');
         const loginLink = document.getElementById('loginLink');
         const registerLink = document.getElementById('registerLink');
         const logoutBtn = document.getElementById('logoutBtn');
+        const staffLink = document.getElementById('staffLink');
+        const adminLink = document.getElementById('adminLink');
+
+        // Mobile elements
+        const dashboardLinkMobile = document.getElementById('dashboardLinkMobile');
+        const loginLinkMobile = document.getElementById('loginLinkMobile');
+        const registerLinkMobile = document.getElementById('registerLinkMobile');
+        const logoutBtnMobile = document.getElementById('logoutBtnMobile');
+        const staffLinkMobile = document.getElementById('staffLinkMobile');
+        const adminLinkMobile = document.getElementById('adminLinkMobile');
 
         if (token) {
             // User is logged in
@@ -117,60 +401,75 @@
             if (loginLink) loginLink.classList.add('hidden');
             if (registerLink) registerLink.classList.add('hidden');
             if (logoutBtn) logoutBtn.classList.remove('hidden');
+
+            // Mobile
+            if (dashboardLinkMobile) dashboardLinkMobile.classList.remove('hidden');
+            if (loginLinkMobile) loginLinkMobile.classList.add('hidden');
+            if (registerLinkMobile) registerLinkMobile.classList.add('hidden');
+            if (logoutBtnMobile) logoutBtnMobile.classList.remove('hidden');
+
+            // Show staff/admin links for staff/superuser
+            if (userInfo.is_staff || userInfo.is_superuser) {
+                if (staffLink) staffLink.classList.remove('hidden');
+                if (staffLinkMobile) staffLinkMobile.classList.remove('hidden');
+                if (adminLink) adminLink.classList.remove('hidden');
+                if (adminLinkMobile) adminLinkMobile.classList.remove('hidden');
+            }
         } else {
             // User is not logged in
             if (dashboardLink) dashboardLink.classList.add('hidden');
             if (loginLink) loginLink.classList.remove('hidden');
             if (registerLink) registerLink.classList.remove('hidden');
             if (logoutBtn) logoutBtn.classList.add('hidden');
+            if (staffLink) staffLink.classList.add('hidden');
+            if (adminLink) adminLink.classList.add('hidden');
+
+            // Mobile
+            if (dashboardLinkMobile) dashboardLinkMobile.classList.add('hidden');
+            if (loginLinkMobile) loginLinkMobile.classList.remove('hidden');
+            if (registerLinkMobile) registerLinkMobile.classList.remove('hidden');
+            if (logoutBtnMobile) logoutBtnMobile.classList.add('hidden');
+            if (staffLinkMobile) staffLinkMobile.classList.add('hidden');
+            if (adminLinkMobile) adminLinkMobile.classList.add('hidden');
         }
     });
 
-    // Toggle language menu
-    function toggleLanguageMenu() {
-        const menu = document.getElementById('languageMenu');
-        menu.classList.toggle('hidden');
-    }
-
-    // Close language menu when clicking outside
-    document.addEventListener('click', function(event) {
-        const dropdown = document.getElementById('languageDropdown');
-        if (dropdown && !dropdown.contains(event.target)) {
-            const menu = document.getElementById('languageMenu');
-            if (menu) menu.classList.add('hidden');
-        }
-    });
-
-    // Change language (wrapper function for i18n.changeLanguage)
-    async function changeLanguageTo(lang) {
-        console.log('🌍 Changing language to:', lang);
-        console.log('🌍 window.i18n:', window.i18n);
-
-        if (window.i18n) {
-            try {
-                const result = await window.i18n.changeLanguage(lang);
-                console.log('✅ Language changed successfully:', result);
-                // Close menu
-                const menu = document.getElementById('languageMenu');
-                if (menu) menu.classList.add('hidden');
-            } catch (error) {
-                console.error('❌ Error changing language:', error);
-            }
-        } else {
-            console.error('❌ window.i18n is not available!');
-        }
-    }
-
-    // Handle logout
+    // Logout Handler
     function handleLogout() {
-        // Remove tokens from localStorage
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
-
-        // Redirect to home page
+        localStorage.removeItem('user_info');
         window.location.href = '/';
     }
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+
+    // Lazy loading for images
+    if ('loading' in HTMLImageElement.prototype) {
+        const images = document.querySelectorAll('img[loading="lazy"]');
+        images.forEach(img => {
+            img.src = img.dataset.src;
+        });
+    } else {
+        // Fallback for browsers that don't support lazy loading
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/lazysizes.min.js';
+        document.body.appendChild(script);
+    }
     </script>
+
     {% block extra_js %}{% endblock %}
 </body>
 </html>

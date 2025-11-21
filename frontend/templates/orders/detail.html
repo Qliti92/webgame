@@ -1,257 +1,270 @@
 {% extends 'base.html' %}
 
-{% block title %}Chi tiết đơn hàng - Game TopUp{% endblock %}
+{% block title %}Order #{{ order_id }} - TOPUPGAMEMOBILE{% endblock %}
+
+{% block meta_description %}View details and status of your game top-up order.{% endblock %}
 
 {% block content %}
 <div class="max-w-4xl mx-auto">
-    <!-- Back Button -->
-    <a href="/dashboard/" class="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6">
-        <i class="fas fa-arrow-left mr-2"></i>
-        <span data-i18n="order.backToDashboard">Quay lại Dashboard</span>
-    </a>
+    <!-- Breadcrumb -->
+    <nav class="text-sm mb-6">
+        <ol class="flex items-center space-x-2">
+            <li><a href="/dashboard/" class="text-dark-400 hover:text-primary-400 transition-colors">Dashboard</a></li>
+            <li><i class="fas fa-chevron-right text-dark-600 text-xs"></i></li>
+            <li class="text-white">Order Details</li>
+        </ol>
+    </nav>
 
-    <!-- Order Detail Card -->
-    <div class="bg-white rounded-lg shadow-lg p-8">
-        <div class="flex justify-between items-start mb-6">
+    <!-- Order Header -->
+    <div class="card p-6 mb-6">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
             <div>
-                <h1 class="text-3xl font-bold text-gray-800 mb-2">
-                    <i class="fas fa-receipt text-blue-600 mr-2"></i>
-                    <span data-i18n="order.detail">Chi tiết đơn hàng</span>
+                <h1 class="text-2xl font-bold text-white mb-1">
+                    <i class="fas fa-receipt text-primary-400 mr-2"></i>
+                    Order #<span id="orderIdDisplay">{{ order_id }}</span>
                 </h1>
-                <p class="text-gray-600"><span data-i18n="order.orderId">Mã đơn</span>: <span id="orderIdDisplay" class="font-semibold"></span></p>
+                <p class="text-dark-400 text-sm" id="orderDate"></p>
             </div>
-            <div id="orderStatus" class="px-4 py-2 rounded-full text-sm font-semibold">
-                <!-- Status will be loaded here -->
-            </div>
+            <span id="orderStatus" class="mt-3 sm:mt-0 px-4 py-2 rounded-full text-sm font-semibold"></span>
         </div>
+    </div>
 
-        <!-- Order Info -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <!-- Game Info -->
-            <div class="border-l-4 border-blue-500 pl-4">
-                <h3 class="text-lg font-bold text-gray-800 mb-3">
-                    <i class="fas fa-gamepad mr-2 text-blue-600"></i>
-                    <span data-i18n="order.gameInfo">Thông tin game</span>
-                </h3>
-                <div class="space-y-2">
-                    <div class="flex items-center">
-                        <img id="gameImage" src="" alt="Game" class="w-16 h-16 rounded-lg mr-4">
-                        <div>
-                            <p class="font-semibold text-lg" id="gameName"></p>
-                            <p class="text-sm text-gray-600" id="packageName"></p>
-                        </div>
-                    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <!-- Game Info -->
+        <div class="card p-6">
+            <h2 class="text-lg font-bold text-white mb-4">
+                <i class="fas fa-gamepad text-primary-400 mr-2"></i>
+                Game Information
+            </h2>
+            <div class="flex items-center mb-4">
+                <img id="gameImage" src="" alt="Game" class="w-16 h-16 rounded-lg mr-4 bg-dark-700">
+                <div>
+                    <p class="font-semibold text-white" id="gameName">-</p>
+                    <p class="text-sm text-dark-400" id="packageName">-</p>
                 </div>
             </div>
-
-            <!-- Account Info -->
-            <div class="border-l-4 border-purple-500 pl-4">
-                <h3 class="text-lg font-bold text-gray-800 mb-3">
-                    <i class="fas fa-user mr-2 text-purple-600"></i>
-                    <span data-i18n="order.accountInfo">Thông tin tài khoản</span>
-                </h3>
-                <div class="space-y-2 text-sm">
-                    <div class="flex justify-between">
-                        <span class="text-gray-600" data-i18n="order.uid">UID:</span>
-                        <span class="font-semibold" id="gameUid"></span>
-                    </div>
-                    <div class="flex justify-between" id="usernameRow">
-                        <span class="text-gray-600">Username:</span>
-                        <span class="font-semibold" id="gameUsername"></span>
-                    </div>
-                    <div class="flex justify-between" id="serverRow">
-                        <span class="text-gray-600" data-i18n="order.server">Server:</span>
-                        <span class="font-semibold" id="serverName"></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Payment Info -->
-        <div class="border-t border-gray-200 pt-6 mb-8">
-            <h3 class="text-lg font-bold text-gray-800 mb-4">
-                <i class="fas fa-credit-card mr-2 text-green-600"></i>
-                <span data-i18n="order.paymentInfo">Thông tin thanh toán</span>
-            </h3>
-            <div class="bg-gray-50 rounded-lg p-4 space-y-3">
-                <div class="flex justify-between">
-                    <span class="text-gray-600" data-i18n="order.topupValue">Giá trị nạp:</span>
-                    <span class="font-semibold" id="orderAmount"></span>
+            <div class="space-y-2 pt-4 border-t border-dark-700">
+                <div class="flex justify-between text-sm">
+                    <span class="text-dark-400">Amount:</span>
+                    <span class="text-white" id="orderAmount">-</span>
                 </div>
                 <div class="flex justify-between">
-                    <span class="text-gray-600" data-i18n="order.total">Tổng tiền:</span>
-                    <span class="text-xl font-bold text-gray-800" id="orderPrice"></span>
+                    <span class="text-dark-400">Total:</span>
+                    <span class="text-xl font-bold text-primary-400" id="orderPrice">$0.00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Account Info -->
+        <div class="card p-6">
+            <h2 class="text-lg font-bold text-white mb-4">
+                <i class="fas fa-user text-pink-400 mr-2"></i>
+                Account Information
+            </h2>
+            <div class="space-y-3">
+                <div class="flex justify-between">
+                    <span class="text-dark-400">UID:</span>
+                    <span class="text-white font-mono" id="gameUid">-</span>
+                </div>
+                <div class="flex justify-between" id="usernameRow">
+                    <span class="text-dark-400">Username:</span>
+                    <span class="text-white" id="gameUsername">-</span>
                 </div>
                 <div class="flex justify-between">
-                    <span class="text-gray-600" data-i18n="order.method">Phương thức thanh toán:</span>
-                    <span class="font-semibold" id="paymentMethod"></span>
-                </div>
-                <div class="flex justify-between" id="txHashRow" style="display: none;">
-                    <span class="text-gray-600" data-i18n="order.txHash">Transaction Hash:</span>
-                    <span class="font-mono text-xs" id="txHash"></span>
+                    <span class="text-dark-400">Payment:</span>
+                    <span class="text-white" id="paymentMethod">-</span>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Customer Note -->
-        <div class="border-t border-gray-200 pt-6 mb-8" id="customerNoteSection" style="display: none;">
-            <h3 class="text-lg font-bold text-gray-800 mb-3">
-                <i class="fas fa-comment mr-2 text-blue-600"></i>
-                <span data-i18n="order.customerNote">Ghi chú của bạn</span>
-            </h3>
-            <p class="text-gray-700 bg-blue-50 p-4 rounded-lg" id="customerNote"></p>
+    <!-- Admin Note -->
+    <div id="adminNoteSection" class="hidden mb-6">
+        <div class="card p-6 border-green-500/50 bg-green-500/5">
+            <h2 class="text-lg font-bold text-white mb-3">
+                <i class="fas fa-comment text-green-400 mr-2"></i>
+                Admin Note
+            </h2>
+            <p id="adminNote" class="text-dark-300"></p>
         </div>
+    </div>
 
-        <!-- Admin Note -->
-        <div class="border-t border-gray-200 pt-6 mb-8" id="adminNoteSection" style="display: none;">
-            <h3 class="text-lg font-bold text-gray-800 mb-3">
-                <i class="fas fa-user-shield mr-2 text-red-600"></i>
-                <span data-i18n="order.adminNote">Ghi chú từ Admin</span>
-            </h3>
-            <p class="text-gray-700 bg-red-50 p-4 rounded-lg" id="adminNote"></p>
+    <!-- Proof Attachments -->
+    <div id="attachmentsSection" class="hidden mb-6">
+        <div class="card p-6">
+            <h2 class="text-lg font-bold text-white mb-4">
+                <i class="fas fa-images text-green-400 mr-2"></i>
+                Proof of Completion
+            </h2>
+            <div id="attachmentsList" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"></div>
         </div>
+    </div>
 
-        <!-- Order Timeline -->
-        <div class="border-t border-gray-200 pt-6">
-            <h3 class="text-lg font-bold text-gray-800 mb-4">
-                <i class="fas fa-history mr-2 text-gray-600"></i>
-                <span data-i18n="order.orderHistory">Lịch sử đơn hàng</span>
-            </h3>
-            <div id="statusLogs" class="space-y-4">
-                <!-- Status logs will be loaded here -->
-            </div>
-        </div>
+    <!-- Status Timeline -->
+    <div class="card p-6 mb-6">
+        <h2 class="text-lg font-bold text-white mb-4">
+            <i class="fas fa-history text-purple-400 mr-2"></i>
+            Order History
+        </h2>
+        <div id="statusLogs" class="space-y-4"></div>
+    </div>
 
-        <!-- Action Buttons -->
-        <div class="border-t border-gray-200 pt-6 mt-8 flex justify-between" id="actionButtons">
-            <button onclick="cancelOrder()" id="cancelBtn" class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition" style="display: none;">
-                <i class="fas fa-times mr-2"></i>
-                <span data-i18n="order.cancelOrder">Hủy đơn hàng</span>
-            </button>
-            <button onclick="proceedToPayment()" id="paymentBtn" class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition" style="display: none;">
-                <i class="fas fa-credit-card mr-2"></i>
-                <span data-i18n="order.payNow">Thanh toán ngay</span>
-            </button>
-        </div>
+    <!-- Action Buttons -->
+    <div class="flex flex-col sm:flex-row gap-4">
+        <a href="/dashboard/" class="btn btn-secondary flex-1">
+            <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+        </a>
+        <button id="paymentBtn" onclick="proceedToPayment()" class="hidden btn btn-primary flex-1">
+            <i class="fas fa-credit-card mr-2"></i>Pay Now
+        </button>
+        <button id="cancelBtn" onclick="cancelOrder()" class="hidden btn btn-outline border-red-500 text-red-400 hover:bg-red-500 hover:text-white flex-1">
+            <i class="fas fa-times mr-2"></i>Cancel Order
+        </button>
     </div>
 </div>
 
 <!-- Payment Modal -->
-<div id="paymentModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
-        <h2 class="text-2xl font-bold mb-6">
-            <i class="fas fa-credit-card mr-2 text-blue-600"></i>
-            <span data-i18n="order.paymentModal.title">Thanh toán đơn hàng</span>
+<div id="paymentModal" class="fixed inset-0 bg-black/70 hidden flex items-center justify-center z-50 p-4">
+    <div class="card p-6 max-w-md w-full">
+        <h2 class="text-xl font-bold text-white mb-6">
+            <i class="fas fa-credit-card text-primary-400 mr-2"></i>
+            Select Payment Method
         </h2>
-
         <form id="paymentForm">
-            <div class="mb-6">
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                    <span data-i18n="order.paymentModal.selectMethod">Chọn phương thức thanh toán</span> *
-                </label>
-                <div class="space-y-3">
-                    <label class="payment-option cursor-pointer">
-                        <input type="radio" name="paymentMethod" value="wallet" class="hidden">
-                        <div class="border-2 border-gray-300 rounded-lg p-4 hover:border-blue-500 transition">
-                            <div class="flex items-center">
-                                <i class="fas fa-wallet text-2xl text-blue-600 mr-3"></i>
-                                <div>
-                                    <p class="font-semibold" data-i18n="gameDetail.wallet">Ví nội bộ</p>
-                                    <p class="text-sm text-gray-500"><span data-i18n="gameDetail.balance">Số dư</span>: <span id="modalWalletBalance">$0.00</span></p>
-                                </div>
+            <div class="space-y-3 mb-6">
+                <label class="payment-option cursor-pointer block">
+                    <input type="radio" name="paymentMethod" value="wallet" class="hidden">
+                    <div class="card p-4 hover:border-primary-500 transition-colors">
+                        <div class="flex items-center">
+                            <i class="fas fa-wallet text-2xl text-primary-400 mr-3"></i>
+                            <div>
+                                <p class="font-semibold text-white">Internal Wallet</p>
+                                <p class="text-sm text-dark-400">Balance: <span id="modalWalletBalance">$0.00</span></p>
                             </div>
                         </div>
-                    </label>
-                    <label class="payment-option cursor-pointer">
-                        <input type="radio" name="paymentMethod" value="crypto" class="hidden">
-                        <div class="border-2 border-gray-300 rounded-lg p-4 hover:border-blue-500 transition">
-                            <div class="flex items-center">
-                                <i class="fab fa-bitcoin text-2xl text-yellow-600 mr-3"></i>
-                                <div>
-                                    <p class="font-semibold" data-i18n="gameDetail.crypto">Crypto</p>
-                                    <p class="text-sm text-gray-500">USDT TRC20</p>
-                                </div>
+                    </div>
+                </label>
+                <label class="payment-option cursor-pointer block">
+                    <input type="radio" name="paymentMethod" value="crypto" class="hidden">
+                    <div class="card p-4 hover:border-primary-500 transition-colors">
+                        <div class="flex items-center">
+                            <i class="fab fa-bitcoin text-2xl text-yellow-500 mr-3"></i>
+                            <div>
+                                <p class="font-semibold text-white">Crypto</p>
+                                <p class="text-sm text-dark-400">USDT TRC20</p>
                             </div>
                         </div>
-                    </label>
-                </div>
-            </div>
-
-            <div id="cryptoHashSection" class="mb-6 hidden">
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                    <span data-i18n="order.paymentModal.txHashOptional">Transaction Hash (Tùy chọn)</span>
+                    </div>
                 </label>
-                <input
-                    type="text"
-                    id="transactionHash"
-                    data-i18n-attr="placeholder"
-                    data-i18n="order.paymentModal.enterTxHash"
-                    placeholder="Nhập transaction hash..."
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
             </div>
-
-            <div class="flex space-x-3">
-                <button type="button" onclick="closePaymentModal()" class="flex-1 px-4 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition">
-                    <span data-i18n="common.cancel">Hủy</span>
-                </button>
-                <button type="submit" class="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                    <span data-i18n="order.paymentModal.confirm">Xác nhận thanh toán</span>
-                </button>
+            <div class="flex gap-3">
+                <button type="button" onclick="closePaymentModal()" class="flex-1 btn btn-secondary">Cancel</button>
+                <button type="submit" class="flex-1 btn btn-primary">Confirm</button>
             </div>
         </form>
     </div>
 </div>
 
+<!-- Crypto Deposit Modal -->
+<div id="cryptoDepositModal" class="fixed inset-0 bg-black/70 hidden flex items-center justify-center z-50 p-4 overflow-y-auto">
+    <div class="card p-6 max-w-lg w-full my-8">
+        <h2 class="text-xl font-bold text-white mb-6">
+            <i class="fab fa-bitcoin text-yellow-500 mr-2"></i>
+            Crypto Deposit (USDT TRC20)
+        </h2>
+        <form id="cryptoDepositForm">
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label class="form-label">Amount (USD)</label>
+                    <input type="number" id="cryptoAmount" readonly class="form-input bg-dark-800 font-bold text-lg">
+                </div>
+                <div>
+                    <label class="form-label">Send USDT to this address</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="cryptoAdminAddress" readonly class="form-input flex-1 bg-dark-800 text-xs font-mono">
+                        <button type="button" onclick="copyCryptoAddress()" class="btn btn-primary px-4">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <label class="form-label">Your Wallet Address (Optional)</label>
+                    <input type="text" id="cryptoFromAddress" placeholder="Your sending wallet address" class="form-input">
+                </div>
+                <div>
+                    <label class="form-label">Transaction Hash <span class="text-red-400">*</span></label>
+                    <input type="text" id="cryptoTxHash" placeholder="TX hash after transfer" required class="form-input">
+                </div>
+            </div>
+            <div class="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 mb-6">
+                <p class="font-semibold text-yellow-400 mb-2 text-sm">
+                    <i class="fas fa-exclamation-triangle mr-1"></i>
+                    Instructions:
+                </p>
+                <ol class="list-decimal list-inside text-xs text-dark-300 space-y-1">
+                    <li>Send exactly <strong id="cryptoAmountInstructions">$0</strong> USDT (TRC20)</li>
+                    <li>Paste TX hash and submit</li>
+                    <li>Wait 5-30 min for verification</li>
+                </ol>
+            </div>
+            <div class="flex gap-3">
+                <button type="button" onclick="closeCryptoDepositModal()" class="flex-1 btn btn-secondary">Cancel</button>
+                <button type="submit" class="flex-1 btn btn-success">Submit Deposit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Image Preview Modal -->
+<div id="imageModal" class="fixed inset-0 bg-black/90 hidden flex items-center justify-center z-50 p-4" onclick="closeImageModal()">
+    <img id="modalImage" src="" alt="Preview" class="max-w-full max-h-full object-contain">
+</div>
+
 <script>
 const orderId = '{{ order_id }}';
 let orderData = null;
+const token = localStorage.getItem('access_token');
+
+if (!token) {
+    window.location.href = '/login/';
+}
 
 document.addEventListener('DOMContentLoaded', function() {
-    const token = localStorage.getItem('access_token');
-    if (!token) {
-        alert('Vui lòng đăng nhập để xem đơn hàng');
-        window.location.href = '/login/';
-        return;
-    }
-
     loadOrderDetail();
     loadWalletBalance();
+    loadAdminAddress();
+    setupPaymentSelection();
 
-    // Payment method selection in modal
-    document.querySelectorAll('.payment-option').forEach(label => {
-        label.addEventListener('click', function() {
-            document.querySelectorAll('.payment-option div').forEach(div => {
-                div.classList.remove('border-blue-500', 'bg-blue-50');
-            });
-            this.querySelector('div').classList.add('border-blue-500', 'bg-blue-50');
-
-            // Show crypto hash input if crypto is selected
-            const method = this.querySelector('input').value;
-            if (method === 'crypto') {
-                document.getElementById('cryptoHashSection').classList.remove('hidden');
-            } else {
-                document.getElementById('cryptoHashSection').classList.add('hidden');
-            }
-        });
-    });
-
-    // Payment form submission
     document.getElementById('paymentForm').addEventListener('submit', handlePayment);
+    document.getElementById('cryptoDepositForm').addEventListener('submit', handleCryptoDeposit);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('pay') === 'crypto') {
+        setTimeout(() => {
+            if (orderData && orderData.status === 'pending_payment') {
+                showCryptoDepositModal();
+            }
+        }, 500);
+    }
 });
 
-function loadOrderDetail() {
-    const token = localStorage.getItem('access_token');
+function setupPaymentSelection() {
+    document.querySelectorAll('.payment-option').forEach(label => {
+        label.addEventListener('click', function() {
+            document.querySelectorAll('.payment-option .card').forEach(div => {
+                div.classList.remove('border-primary-500', 'bg-primary-500/10');
+            });
+            this.querySelector('.card').classList.add('border-primary-500', 'bg-primary-500/10');
+        });
+    });
+}
 
+function loadOrderDetail() {
     fetch(`/api/orders/${orderId}/`, {
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
+        headers: { 'Authorization': `Bearer ${token}` }
     })
     .then(response => {
-        if (!response.ok) {
-            throw new Error('Order not found');
-        }
+        if (!response.ok) throw new Error('Order not found');
         return response.json();
     })
     .then(order => {
@@ -259,116 +272,115 @@ function loadOrderDetail() {
         displayOrderDetail(order);
     })
     .catch(error => {
-        console.error('Error:', error);
-        alert('Không thể tải thông tin đơn hàng');
-        window.location.href = '/dashboard/';
+        window.modal?.error('Error', 'Unable to load order', {
+            actions: [{ label: 'Go Back', style: 'primary', onClick: () => window.location.href = '/dashboard/' }]
+        });
     });
 }
 
 function displayOrderDetail(order) {
-    // Order ID
     document.getElementById('orderIdDisplay').textContent = order.order_id;
+    document.getElementById('orderDate').textContent = new Date(order.created_at).toLocaleString('en-US');
 
-    // Status
-    const statusColors = {
-        'pending_payment': 'bg-yellow-100 text-yellow-800',
-        'paid': 'bg-blue-100 text-blue-800',
-        'processing': 'bg-purple-100 text-purple-800',
-        'completed': 'bg-green-100 text-green-800',
-        'canceled': 'bg-gray-100 text-gray-800',
-        'refunded': 'bg-red-100 text-red-800'
+    const statusConfig = {
+        'pending_payment': { bg: 'bg-yellow-500/20', text: 'text-yellow-400', label: 'Pending Payment' },
+        'paid': { bg: 'bg-blue-500/20', text: 'text-blue-400', label: 'Paid' },
+        'processing': { bg: 'bg-purple-500/20', text: 'text-purple-400', label: 'Processing' },
+        'completed': { bg: 'bg-green-500/20', text: 'text-green-400', label: 'Completed' },
+        'canceled': { bg: 'bg-dark-600', text: 'text-dark-400', label: 'Canceled' },
+        'refunded': { bg: 'bg-red-500/20', text: 'text-red-400', label: 'Refunded' }
     };
 
-    const statusTexts = {
-        'pending_payment': 'Chờ thanh toán',
-        'paid': 'Đã thanh toán',
-        'processing': 'Đang xử lý',
-        'completed': 'Hoàn thành',
-        'canceled': 'Đã hủy',
-        'refunded': 'Đã hoàn tiền'
-    };
-
+    const status = statusConfig[order.status] || statusConfig['pending_payment'];
     const statusEl = document.getElementById('orderStatus');
-    statusEl.className = `px-4 py-2 rounded-full text-sm font-semibold ${statusColors[order.status]}`;
-    statusEl.textContent = statusTexts[order.status];
+    statusEl.className = `px-4 py-2 rounded-full text-sm font-semibold ${status.bg} ${status.text}`;
+    statusEl.textContent = status.label;
 
-    // Game info
-    document.getElementById('gameImage').src = order.game_image;
+    document.getElementById('gameImage').src = order.game_image || '/static/images/game-placeholder.png';
     document.getElementById('gameName').textContent = order.game_name;
-
-    if (order.package_name) {
-        document.getElementById('packageName').textContent = order.package_name;
-    } else {
-        document.getElementById('packageName').style.display = 'none';
-    }
-
-    // Account info
-    document.getElementById('gameUid').textContent = order.game_uid;
-
-    if (order.game_username) {
-        document.getElementById('gameUsername').textContent = order.game_username;
-    } else {
-        document.getElementById('usernameRow').style.display = 'none';
-    }
-
-    if (order.server_name) {
-        document.getElementById('serverName').textContent = order.server_name;
-    } else {
-        document.getElementById('serverRow').style.display = 'none';
-    }
-
-    // Payment info
+    document.getElementById('packageName').textContent = order.package_name || '-';
     document.getElementById('orderAmount').textContent = formatCurrency(order.amount);
     document.getElementById('orderPrice').textContent = formatCurrency(order.price);
 
-    const paymentMethods = {
-        'wallet': 'Ví nội bộ',
-        'crypto': 'Crypto (USDT TRC20)',
-        '': 'Chưa chọn'
-    };
-    document.getElementById('paymentMethod').textContent = paymentMethods[order.payment_method || ''];
+    document.getElementById('gameUid').textContent = order.game_uid;
+    document.getElementById('gameUsername').textContent = order.game_username || '-';
 
-    // Customer note
-    if (order.customer_note) {
-        document.getElementById('customerNote').textContent = order.customer_note;
-        document.getElementById('customerNoteSection').style.display = 'block';
-    }
+    const paymentMethods = { 'wallet': 'Internal Wallet', 'crypto': 'Crypto (USDT)' };
+    document.getElementById('paymentMethod').textContent = paymentMethods[order.payment_method] || 'Not selected';
 
-    // Admin note
     if (order.admin_note) {
         document.getElementById('adminNote').textContent = order.admin_note;
-        document.getElementById('adminNoteSection').style.display = 'block';
+        document.getElementById('adminNoteSection').classList.remove('hidden');
     }
 
-    // Status logs
-    if (order.status_logs && order.status_logs.length > 0) {
-        displayStatusLogs(order.status_logs);
-    }
+    if (order.status_logs) displayStatusLogs(order.status_logs);
 
-    // Action buttons
     if (order.status === 'pending_payment') {
-        document.getElementById('cancelBtn').style.display = 'block';
-        document.getElementById('paymentBtn').style.display = 'block';
+        document.getElementById('cancelBtn').classList.remove('hidden');
+        document.getElementById('paymentBtn').classList.remove('hidden');
     }
+
+    // Load attachments for completed orders
+    loadAttachments();
+}
+
+function loadAttachments() {
+    fetch(`/api/orders/${orderId}/attachments/`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+    })
+    .then(r => r.json())
+    .then(data => {
+        // Handle paginated response
+        const attachments = data.results || data;
+        if (attachments && attachments.length > 0) {
+            displayAttachments(attachments);
+            document.getElementById('attachmentsSection').classList.remove('hidden');
+        }
+    })
+    .catch(e => console.error(e));
+}
+
+function displayAttachments(attachments) {
+    const container = document.getElementById('attachmentsList');
+    container.innerHTML = attachments.map(att => `
+        <div class="relative">
+            <img src="${att.file_url}" alt="${att.description || 'Proof'}"
+                 class="w-full h-32 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
+                 onclick="showImage('${att.file_url}')">
+            <div class="absolute bottom-0 left-0 right-0 bg-black/70 p-2 rounded-b-lg">
+                <p class="text-xs text-white truncate">${att.description || 'Proof image'}</p>
+            </div>
+        </div>
+    `).join('');
+}
+
+function showImage(url) {
+    document.getElementById('modalImage').src = url;
+    document.getElementById('imageModal').classList.remove('hidden');
+}
+
+function closeImageModal() {
+    document.getElementById('imageModal').classList.add('hidden');
 }
 
 function displayStatusLogs(logs) {
     const container = document.getElementById('statusLogs');
     container.innerHTML = '';
 
+    if (!logs || logs.length === 0) {
+        container.innerHTML = '<p class="text-dark-400 text-sm">No history available</p>';
+        return;
+    }
+
     logs.forEach((log, index) => {
         const div = document.createElement('div');
         div.className = 'flex items-start';
         div.innerHTML = `
-            <div class="flex-shrink-0 w-2 h-2 mt-2 rounded-full ${index === 0 ? 'bg-blue-500' : 'bg-gray-300'}"></div>
+            <div class="w-2 h-2 mt-2 rounded-full ${index === 0 ? 'bg-primary-500' : 'bg-dark-600'}"></div>
             <div class="ml-4 flex-1">
                 <div class="flex justify-between items-start">
-                    <div>
-                        <p class="font-semibold text-gray-800">${getStatusText(log.new_status)}</p>
-                        <p class="text-sm text-gray-600">${log.note}</p>
-                        ${log.changed_by_email ? `<p class="text-xs text-gray-500">Bởi: ${log.changed_by_email}</p>` : ''}
-                    </div>
-                    <p class="text-xs text-gray-500">${new Date(log.created_at).toLocaleString('vi-VN')}</p>
+                    <p class="font-semibold text-white text-sm">${log.note}</p>
+                    <p class="text-xs text-dark-500">${new Date(log.created_at).toLocaleString('en-US')}</p>
                 </div>
             </div>
         `;
@@ -376,117 +388,120 @@ function displayStatusLogs(logs) {
     });
 }
 
-function getStatusText(status) {
-    const statusTexts = {
-        'pending_payment': 'Chờ thanh toán',
-        'paid': 'Đã thanh toán',
-        'processing': 'Đang xử lý',
-        'completed': 'Hoàn thành',
-        'canceled': 'Đã hủy',
-        'refunded': 'Đã hoàn tiền'
-    };
-    return statusTexts[status] || status;
-}
-
 function loadWalletBalance() {
-    const token = localStorage.getItem('access_token');
-
-    fetch('/api/wallets/', {
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        document.getElementById('modalWalletBalance').textContent = formatCurrency(data.balance);
-    })
-    .catch(error => console.error('Error loading wallet:', error));
+    fetch('/api/wallets/', { headers: { 'Authorization': `Bearer ${token}` } })
+    .then(r => r.json())
+    .then(data => { document.getElementById('modalWalletBalance').textContent = formatCurrency(data.balance); })
+    .catch(e => console.error(e));
 }
 
-function proceedToPayment() {
-    document.getElementById('paymentModal').classList.remove('hidden');
+function loadAdminAddress() {
+    fetch('/api/wallets/admin-address/', { headers: { 'Authorization': `Bearer ${token}` } })
+    .then(r => r.json())
+    .then(data => { document.getElementById('cryptoAdminAddress').value = data.admin_address; })
+    .catch(e => console.error(e));
 }
 
-function closePaymentModal() {
-    document.getElementById('paymentModal').classList.add('hidden');
-}
+function proceedToPayment() { document.getElementById('paymentModal').classList.remove('hidden'); }
+function closePaymentModal() { document.getElementById('paymentModal').classList.add('hidden'); }
 
 function handlePayment(e) {
     e.preventDefault();
+    const method = document.querySelector('input[name="paymentMethod"]:checked')?.value;
+    if (!method) { window.modal?.error('Error', 'Please select payment method'); return; }
 
-    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value;
-    if (!paymentMethod) {
-        alert('Vui lòng chọn phương thức thanh toán');
-        return;
+    if (method === 'wallet') {
+        fetch(`/api/orders/${orderId}/payment/`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ payment_method: 'wallet' })
+        })
+        .then(r => r.json().then(d => { if (!r.ok) throw new Error(d.error || 'Payment failed'); return d; }))
+        .then(data => {
+            window.modal?.success('Payment Successful', data.message || 'Your order is being processed');
+            closePaymentModal();
+            loadOrderDetail();
+        })
+        .catch(e => window.modal?.error('Error', e.message));
+    } else {
+        closePaymentModal();
+        showCryptoDepositModal();
     }
+}
 
-    const token = localStorage.getItem('access_token');
+function showCryptoDepositModal() {
+    if (!orderData) return;
+    document.getElementById('cryptoAmount').value = orderData.price;
+    document.getElementById('cryptoAmountInstructions').textContent = `$${orderData.price}`;
+    document.getElementById('cryptoFromAddress').value = '';
+    document.getElementById('cryptoTxHash').value = '';
+    document.getElementById('cryptoDepositModal').classList.remove('hidden');
+}
+
+function closeCryptoDepositModal() { document.getElementById('cryptoDepositModal').classList.add('hidden'); }
+
+function copyCryptoAddress() {
+    const input = document.getElementById('cryptoAdminAddress');
+    input.select();
+    document.execCommand('copy');
+    window.modal?.success('Copied!', 'Address copied', { autoClose: true, autoCloseDelay: 1500 });
+}
+
+function handleCryptoDeposit(e) {
+    e.preventDefault();
     const formData = {
-        payment_method: paymentMethod
+        amount: parseFloat(document.getElementById('cryptoAmount').value),
+        from_address: document.getElementById('cryptoFromAddress').value,
+        tx_hash: document.getElementById('cryptoTxHash').value,
+        related_order: orderData.id
     };
 
-    if (paymentMethod === 'crypto') {
-        formData.transaction_hash = document.getElementById('transactionHash').value;
-    }
-
-    fetch(`/api/orders/${orderId}/payment/`, {
+    fetch('/api/wallets/crypto-deposits/create/', {
         method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        },
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.message) {
-            alert(data.message);
-            closePaymentModal();
-            loadOrderDetail(); // Reload order detail
-        } else if (data.error) {
-            alert(data.error);
+    .then(r => r.json().then(d => {
+        if (!r.ok) {
+            let msg = d.tx_hash?.[0] || d.amount?.[0] || d.detail || 'Error occurred';
+            throw new Error(msg);
         }
+        return d;
+    }))
+    .then(data => {
+        closeCryptoDepositModal();
+        window.modal?.success('Deposit Submitted!', 'Wait 5-30 min for admin verification', {
+            actions: [{ label: 'OK', style: 'primary', onClick: () => loadOrderDetail() }]
+        });
     })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Có lỗi xảy ra khi thanh toán');
-    });
+    .catch(e => window.modal?.error('Error', e.message));
 }
 
 function cancelOrder() {
-    if (!confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) {
-        return;
-    }
-
-    const token = localStorage.getItem('access_token');
-
-    fetch(`/api/orders/${orderId}/cancel/`, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.message) {
-            alert(data.message);
-            loadOrderDetail(); // Reload order detail
-        } else if (data.error) {
-            alert(data.error);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Có lỗi xảy ra khi hủy đơn hàng');
+    window.modal?.show({
+        type: 'warning',
+        title: 'Cancel Order',
+        message: 'Are you sure you want to cancel this order?',
+        actions: [
+            { label: 'No', style: 'secondary' },
+            { label: 'Yes, Cancel', style: 'primary', onClick: () => {
+                fetch(`/api/orders/${orderId}/cancel/`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                })
+                .then(r => r.json().then(d => { if (!r.ok) throw new Error(d.error || 'Cancel failed'); return d; }))
+                .then(data => {
+                    window.modal?.success('Order Canceled', data.message || 'Success');
+                    loadOrderDetail();
+                })
+                .catch(e => window.modal?.error('Error', e.message));
+            }}
+        ]
     });
 }
 
 function formatCurrency(amount) {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD'
-    }).format(amount);
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
 }
 </script>
 {% endblock %}

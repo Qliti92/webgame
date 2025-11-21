@@ -1,0 +1,151 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">Home</a>
+    &rsaquo; <a href="{% url 'admin:notifications_notification_changelist' %}">Notifications</a>
+    &rsaquo; Send System Notification
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <form method="post" id="send-notification-form">
+        {% csrf_token %}
+
+        <fieldset class="module aligned">
+            <h2>Send System Notification</h2>
+
+            <div class="form-row">
+                <div>
+                    <label>Recipient:</label>
+                    {% for choice in form.recipient_type %}
+                        <div style="margin: 5px 0;">
+                            {{ choice }}
+                        </div>
+                    {% endfor %}
+                    {% if form.recipient_type.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.recipient_type.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-row" id="user-select-row">
+                <div>
+                    <label for="{{ form.user.id_for_label }}">User:</label>
+                    {{ form.user }}
+                    {% if form.user.help_text %}
+                        <p class="help">{{ form.user.help_text }}</p>
+                    {% endif %}
+                    {% if form.user.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.user.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div>
+                    <label for="{{ form.title.id_for_label }}" class="required">Title:</label>
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.title.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div>
+                    <label for="{{ form.message.id_for_label }}" class="required">Message:</label>
+                    {{ form.message }}
+                    {% if form.message.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.message.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div>
+                    <label for="{{ form.is_important.id_for_label }}">Important:</label>
+                    {{ form.is_important }}
+                    {% if form.is_important.help_text %}
+                        <p class="help">{{ form.is_important.help_text }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="submit-row">
+            <input type="submit" value="Send Notification" class="default">
+            <a href="{% url 'admin:notifications_notification_changelist' %}" class="button cancel-link">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const recipientRadios = document.querySelectorAll('input[name="recipient_type"]');
+    const userSelectRow = document.getElementById('user-select-row');
+
+    function toggleUserSelect() {
+        const selected = document.querySelector('input[name="recipient_type"]:checked');
+        if (selected && selected.value === 'all') {
+            userSelectRow.style.display = 'none';
+        } else {
+            userSelectRow.style.display = 'block';
+        }
+    }
+
+    recipientRadios.forEach(function(radio) {
+        radio.addEventListener('change', toggleUserSelect);
+    });
+
+    toggleUserSelect();
+});
+</script>
+
+<style>
+#send-notification-form input[type="text"],
+#send-notification-form textarea,
+#send-notification-form select {
+    width: 100%;
+    max-width: 600px;
+}
+
+#send-notification-form textarea {
+    min-height: 150px;
+}
+
+.form-row {
+    padding: 10px;
+}
+
+.form-row label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.form-row .help {
+    font-size: 11px;
+    color: #666;
+    margin-top: 3px;
+}
+</style>
+{% endblock %}

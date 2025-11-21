@@ -24,15 +24,15 @@ class Modal {
 
                 <!-- Modal Dialog -->
                 <div class="flex min-h-screen items-center justify-center p-4">
-                    <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full transform transition-all" id="modal-dialog">
+                    <div class="relative bg-slate-800 border border-slate-700 rounded-lg shadow-xl max-w-md w-full transform transition-all" id="modal-dialog">
                         <!-- Modal Header -->
-                        <div class="modal-header px-6 py-4 border-b" id="modal-header">
+                        <div class="modal-header px-6 py-4 border-b border-slate-700" id="modal-header">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center">
                                     <div class="modal-icon mr-3 text-2xl" id="modal-icon"></div>
-                                    <h3 class="text-lg font-bold text-gray-900" id="modal-title"></h3>
+                                    <h3 class="text-lg font-bold text-slate-100" id="modal-title"></h3>
                                 </div>
-                                <button type="button" class="text-gray-400 hover:text-gray-600 transition" id="modal-close-btn">
+                                <button type="button" class="text-slate-400 hover:text-slate-200 transition" id="modal-close-btn">
                                     <i class="fas fa-times text-xl"></i>
                                 </button>
                             </div>
@@ -40,12 +40,12 @@ class Modal {
 
                         <!-- Modal Body -->
                         <div class="modal-body px-6 py-4" id="modal-body">
-                            <p class="text-gray-700" id="modal-message"></p>
+                            <p class="text-slate-300" id="modal-message"></p>
                             <div id="modal-extra-content"></div>
                         </div>
 
                         <!-- Modal Footer -->
-                        <div class="modal-footer px-6 py-4 border-t bg-gray-50 rounded-b-lg" id="modal-footer">
+                        <div class="modal-footer px-6 py-4 border-t border-slate-700 bg-slate-800/50 rounded-b-lg" id="modal-footer">
                             <div class="flex justify-end space-x-3" id="modal-actions"></div>
                         </div>
                     </div>
@@ -164,33 +164,33 @@ class Modal {
         const configs = {
             success: {
                 icon: '<i class="fas fa-check-circle"></i>',
-                color: 'text-green-500',
-                headerBg: 'bg-green-50',
-                textColor: 'text-green-900'
+                color: 'text-green-400',
+                headerBg: 'bg-green-900/30',
+                textColor: 'text-green-300'
             },
             error: {
                 icon: '<i class="fas fa-exclamation-circle"></i>',
-                color: 'text-red-500',
-                headerBg: 'bg-red-50',
-                textColor: 'text-red-900'
+                color: 'text-red-400',
+                headerBg: 'bg-red-900/30',
+                textColor: 'text-red-300'
             },
             warning: {
                 icon: '<i class="fas fa-exclamation-triangle"></i>',
-                color: 'text-yellow-500',
-                headerBg: 'bg-yellow-50',
-                textColor: 'text-yellow-900'
+                color: 'text-yellow-400',
+                headerBg: 'bg-yellow-900/30',
+                textColor: 'text-yellow-300'
             },
             info: {
                 icon: '<i class="fas fa-info-circle"></i>',
-                color: 'text-blue-500',
-                headerBg: 'bg-blue-50',
-                textColor: 'text-blue-900'
+                color: 'text-blue-400',
+                headerBg: 'bg-blue-900/30',
+                textColor: 'text-blue-300'
             },
             question: {
                 icon: '<i class="fas fa-question-circle"></i>',
-                color: 'text-purple-500',
-                headerBg: 'bg-purple-50',
-                textColor: 'text-purple-900'
+                color: 'text-purple-400',
+                headerBg: 'bg-purple-900/30',
+                textColor: 'text-purple-300'
             }
         };
 
@@ -205,10 +205,10 @@ class Modal {
         // Button styles
         const styles = {
             primary: 'px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-purple-700 transition transform hover:scale-105',
-            secondary: 'px-4 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition',
-            success: 'px-4 py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition',
-            danger: 'px-4 py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition',
-            warning: 'px-4 py-2 bg-yellow-500 text-white font-semibold rounded-lg hover:bg-yellow-600 transition'
+            secondary: 'px-4 py-2 bg-slate-700 text-slate-200 font-semibold rounded-lg hover:bg-slate-600 transition',
+            success: 'px-4 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition',
+            danger: 'px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition',
+            warning: 'px-4 py-2 bg-yellow-600 text-white font-semibold rounded-lg hover:bg-yellow-700 transition'
         };
 
         button.className = styles[action.style || 'primary'];
@@ -298,7 +298,7 @@ class Modal {
                     type="text"
                     id="prompt-input"
                     value="${defaultValue}"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="${message}"
                 >
             </div>

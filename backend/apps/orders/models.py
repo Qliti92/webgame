@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from apps.core.models import TimeStampedModel
-from apps.games.models import Game, GamePackage, GameServer
+from apps.games.models import Game, GamePackage
 from django.db import transaction
 
 User = get_user_model()
@@ -31,17 +31,27 @@ class Order(TimeStampedModel):
     game = models.ForeignKey(Game, on_delete=models.PROTECT, related_name='game_orders', verbose_name='Game')
     game_package = models.ForeignKey(GamePackage, on_delete=models.SET_NULL, null=True, blank=True,
                                      verbose_name='Gói nạp')
-    server = models.ForeignKey(GameServer, on_delete=models.SET_NULL, null=True, blank=True,
-                              verbose_name='Server')
 
-    # Account information
-    game_uid = models.CharField(max_length=200, verbose_name='UID / ID nhân vật')
-    game_username = models.CharField(max_length=200, blank=True, null=True, verbose_name='Tên tài khoản game')
+    # Account information (required for new orders)
+    game_uid = models.CharField(max_length=200, verbose_name='UID / ID tài khoản game')
+    game_username = models.CharField(max_length=200, blank=True, null=True, verbose_name='Tên đăng nhập game')
+    game_password = models.CharField(max_length=200, blank=True, null=True, verbose_name='Mật khẩu game')
+    character_name = models.CharField(max_length=200, blank=True, null=True, verbose_name='Tên nhân vật trong game')
+
+    # Optional account info (for backward compatibility)
     game_email = models.EmailField(blank=True, null=True, verbose_name='Email game')
     game_phone = models.CharField(max_length=20, blank=True, null=True, verbose_name='SĐT game')
 
-    # Pricing
-    amount = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='Amount (Game Currency)')
+    # Package snapshot (save package info at order creation time)
+    package_name_snapshot = models.CharField(max_length=200, null=True, blank=True, verbose_name='Tên gói (snapshot)')
+    package_type_snapshot = models.CharField(max_length=20, null=True, blank=True, verbose_name='Loại gói (snapshot)')
+    package_in_game_amount = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True,
+                                                 verbose_name='Số lượng trong game')
+    package_in_game_unit = models.CharField(max_length=50, null=True, blank=True, verbose_name='Đơn vị trong game (snapshot)')
+
+    # Pricing (backward compatible - for old orders without package)
+    amount = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True,
+                                verbose_name='Amount (Game Currency) - Legacy')
     price = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name='Price (USD)')
 
     # Payment
@@ -74,6 +84,11 @@ class Order(TimeStampedModel):
 
     def __str__(self):
         return f"Order {self.order_id} - {self.user.email} - {self.status}"
+
+    @property
+    def total_amount(self):
+        """Total amount for this order (currently just the price, can be extended for fees/tax)"""
+        return self.price
 
     def save(self, *args, **kwargs):
         """Override save to generate order_id"""

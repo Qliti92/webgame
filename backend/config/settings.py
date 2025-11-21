@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'drf_spectacular',  # API documentation
     'django_celery_beat',  # Celery beat for periodic tasks
     'django_celery_results',  # Store celery task results
+    'captcha',  # django-simple-captcha
 
     # Local apps
     'apps.core',
@@ -41,6 +42,7 @@ INSTALLED_APPS = [
     'apps.games',
     'apps.orders',
     'apps.wallets',
+    'apps.notifications',
 ]
 
 MIDDLEWARE = [
@@ -48,7 +50,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',  # Serve static files
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.locale.LocaleMiddleware',  # For multi-language support
+    # LocaleMiddleware removed - English only for frontend, Vietnamese for admin
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -61,7 +63,10 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'frontend' / 'templates'],
+        'DIRS': [
+            BASE_DIR / 'frontend' / 'templates',
+            BASE_DIR / 'templates',  # For admin templates
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -69,6 +74,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'apps.core.context_processors.site_appearance',
             ],
         },
     },
@@ -102,6 +108,12 @@ else:
 # Custom User Model
 AUTH_USER_MODEL = 'users.User'
 
+# Authentication Backends - Allow login with email or username
+AUTHENTICATION_BACKENDS = [
+    'apps.users.backends.EmailOrUsernameBackend',  # Custom backend for email/username login
+    'django.contrib.auth.backends.ModelBackend',   # Default backend (fallback)
+]
+
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -131,28 +143,30 @@ AUTH_PASSWORD_VALIDATORS = [
 # ]
 
 # Internationalization
-LANGUAGE_CODE = 'en'
+# Frontend: English only
+# Django Admin: Vietnamese (via Django's built-in translations)
+LANGUAGE_CODE = 'vi'  # Vietnamese for Django Admin
 TIME_ZONE = 'UTC'
-USE_I18N = True
+USE_I18N = True  # Keep enabled for Django's internal translations
 USE_L10N = True
 USE_TZ = True
 
-# Supported languages
-LANGUAGES = [
-    ('en', 'English'),
-    ('vi', 'Tiếng Việt'),
-    ('zh-hans', '简体中文'),
-]
-
-# Path for translation files
-LOCALE_PATHS = [
-    BASE_DIR / 'locale',
-]
+# Multi-language support removed - English only for user-facing pages
+# Admin will use Vietnamese through Django's built-in translations
 
 # Static files
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = [BASE_DIR / 'frontend' / 'static']
+
+# Frontend static files path
+# In Docker: BASE_DIR is /app, frontend is at /app/frontend
+# In local dev: BASE_DIR is backend/, frontend is at ../frontend
+if Path('/app/frontend/static').exists():
+    # Docker environment
+    STATICFILES_DIRS = [Path('/app/frontend/static')]
+else:
+    # Local development
+    STATICFILES_DIRS = [BASE_DIR.parent / 'frontend' / 'static']
 
 # Use Whitenoise for serving static files in production
 if not DEBUG:
@@ -326,7 +340,7 @@ JAZZMIN_SETTINGS = {
     "hide_models": [],
 
     # Order of apps/models in side menu
-    "order_with_respect_to": ["users", "games", "orders", "wallets"],
+    "order_with_respect_to": ["users", "games", "orders", "wallets", "notifications"],
 
     # Custom icons for apps/models (Font Awesome)
     "icons": {
@@ -340,6 +354,8 @@ JAZZMIN_SETTINGS = {
         "wallets.UserWallet": "fas fa-wallet",
         "wallets.Deposit": "fas fa-coins",
         "wallets.Withdrawal": "fas fa-money-bill-wave",
+        "notifications.Notification": "fas fa-bell",
+        "notifications.NotificationPreference": "fas fa-cog",
     },
 
     # Icons that are used when one is not manually specified
@@ -404,3 +420,62 @@ JAZZMIN_UI_TWEAKS = {
         "success": "btn-success",
     },
 }
+
+# ==============================================================================
+# EMAIL CONFIGURATION
+# ==============================================================================
+
+EMAIL_BACKEND = config(
+    'EMAIL_BACKEND',
+    default='django.core.mail.backends.console.EmailBackend'  # For development, prints to console
+)
+EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@gametopup.com')
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
+# ==============================================================================
+# CAPTCHA CONFIGURATION
+# ==============================================================================
+
+# django-simple-captcha settings
+CAPTCHA_IMAGE_SIZE = (120, 50)
+CAPTCHA_FONT_SIZE = 30
+CAPTCHA_BACKGROUND_COLOR = '#f8f9fa'
+CAPTCHA_FOREGROUND_COLOR = '#1f2937'
+CAPTCHA_LENGTH = 4  # Number of characters
+CAPTCHA_TIMEOUT = 5  # Minutes until CAPTCHA expires
+CAPTCHA_NOISE_FUNCTIONS = ('captcha.helpers.noise_dots',)
+
+# ==============================================================================
+# PASSWORD RESET CONFIGURATION
+# ==============================================================================
+
+# Password reset token expires in 1 hour
+PASSWORD_RESET_TIMEOUT = 3600  # seconds
+
+# ==============================================================================
+# RATE LIMITING CONFIGURATION
+# ==============================================================================
+
+# Rate limit settings for authentication endpoints
+RATELIMIT_ENABLE = True
+RATELIMIT_USE_CACHE = 'default'
+
+# Max login attempts
+MAX_LOGIN_ATTEMPTS = 5
+LOGIN_ATTEMPT_TIMEOUT = 900  # 15 minutes in seconds
+
+# Max password reset requests
+MAX_PASSWORD_RESET_ATTEMPTS = 3
+PASSWORD_RESET_ATTEMPT_TIMEOUT = 3600  # 1 hour in seconds
+
+# ==============================================================================
+# FRONTEND CONFIGURATION
+# ==============================================================================
+
+# Frontend URL for email links
+FRONTEND_URL = config('FRONTEND_URL', default='http://localhost')

@@ -1,115 +1,126 @@
 {% extends 'base.html' %}
 
-{% block title %}Lịch sử nạp tiền - Game TopUp{% endblock %}
+{% block title %}Deposit History - TOPUPGAMEMOBILE{% endblock %}
+
+{% block meta_description %}View your deposit transaction history. Track pending, confirmed, and rejected deposits.{% endblock %}
 
 {% block content %}
 <div class="max-w-6xl mx-auto">
+    <!-- Breadcrumb -->
+    <nav class="text-sm mb-6">
+        <ol class="flex items-center space-x-2">
+            <li><a href="/dashboard/" class="text-dark-400 hover:text-primary-400 transition-colors">Dashboard</a></li>
+            <li><i class="fas fa-chevron-right text-dark-600 text-xs"></i></li>
+            <li class="text-white">Deposit History</li>
+        </ol>
+    </nav>
+
     <!-- Header -->
-    <div class="flex justify-between items-center mb-8">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
-            <h1 class="text-3xl font-bold text-gray-800 mb-2">
-                <i class="fas fa-history text-blue-600 mr-2"></i>
-                <span data-i18n="wallet.depositHistory">Deposit History</span>
+            <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">
+                <i class="fas fa-history text-primary-400 mr-2"></i>
+                Deposit History
             </h1>
-            <p class="text-gray-600" data-i18n="wallet.trackDeposits">Track your deposit transactions</p>
+            <p class="text-dark-400">Track your deposit transactions</p>
         </div>
-        <a href="/wallet/deposit/" class="px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition">
+        <a href="/wallet/deposit/" class="btn btn-primary px-6 py-3">
             <i class="fas fa-plus mr-2"></i>
-            <span data-i18n="wallet.newDeposit">New Deposit</span>
+            New Deposit
         </a>
     </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white rounded-lg shadow-lg p-6">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
+        <div class="card p-4 md:p-6">
             <div class="flex items-center">
-                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                    <i class="fas fa-list text-2xl text-blue-600"></i>
+                <div class="w-10 h-10 md:w-12 md:h-12 bg-primary-500/20 rounded-xl flex items-center justify-center mr-3">
+                    <i class="fas fa-list text-xl md:text-2xl text-primary-400"></i>
                 </div>
                 <div>
-                    <p class="text-gray-600 text-sm" data-i18n="wallet.total">Total</p>
-                    <p class="text-2xl font-bold text-gray-800" id="totalCount">0</p>
+                    <p class="text-dark-400 text-xs md:text-sm">Total</p>
+                    <p class="text-xl md:text-2xl font-bold text-white" id="totalCount">0</p>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow-lg p-6">
+        <div class="card p-4 md:p-6">
             <div class="flex items-center">
-                <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mr-3">
-                    <i class="fas fa-clock text-2xl text-yellow-600"></i>
+                <div class="w-10 h-10 md:w-12 md:h-12 bg-yellow-500/20 rounded-xl flex items-center justify-center mr-3">
+                    <i class="fas fa-clock text-xl md:text-2xl text-yellow-400"></i>
                 </div>
                 <div>
-                    <p class="text-gray-600 text-sm" data-i18n="wallet.status.pending">Pending</p>
-                    <p class="text-2xl font-bold text-gray-800" id="pendingCount">0</p>
+                    <p class="text-dark-400 text-xs md:text-sm">Pending</p>
+                    <p class="text-xl md:text-2xl font-bold text-white" id="pendingCount">0</p>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow-lg p-6">
+        <div class="card p-4 md:p-6">
             <div class="flex items-center">
-                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                    <i class="fas fa-check-circle text-2xl text-green-600"></i>
+                <div class="w-10 h-10 md:w-12 md:h-12 bg-green-500/20 rounded-xl flex items-center justify-center mr-3">
+                    <i class="fas fa-check-circle text-xl md:text-2xl text-green-400"></i>
                 </div>
                 <div>
-                    <p class="text-gray-600 text-sm" data-i18n="wallet.status.confirmed">Confirmed</p>
-                    <p class="text-2xl font-bold text-gray-800" id="confirmedCount">0</p>
+                    <p class="text-dark-400 text-xs md:text-sm">Confirmed</p>
+                    <p class="text-xl md:text-2xl font-bold text-white" id="confirmedCount">0</p>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow-lg p-6">
+        <div class="card p-4 md:p-6">
             <div class="flex items-center">
-                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-3">
-                    <i class="fas fa-times-circle text-2xl text-red-600"></i>
+                <div class="w-10 h-10 md:w-12 md:h-12 bg-red-500/20 rounded-xl flex items-center justify-center mr-3">
+                    <i class="fas fa-times-circle text-xl md:text-2xl text-red-400"></i>
                 </div>
                 <div>
-                    <p class="text-gray-600 text-sm" data-i18n="wallet.status.rejected">Rejected</p>
-                    <p class="text-2xl font-bold text-gray-800" id="rejectedCount">0</p>
+                    <p class="text-dark-400 text-xs md:text-sm">Rejected</p>
+                    <p class="text-xl md:text-2xl font-bold text-white" id="rejectedCount">0</p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Filter -->
-    <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <select id="statusFilter" class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <option value="" data-i18n="wallet.allStatus">Tất cả trạng thái</option>
-                <option value="pending" data-i18n="wallet.status.pending">Chờ duyệt</option>
-                <option value="confirmed" data-i18n="wallet.status.confirmed">Đã duyệt</option>
-                <option value="rejected" data-i18n="wallet.status.rejected">Bị từ chối</option>
+    <div class="card p-4 md:p-6 mb-6">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <select id="statusFilter" class="form-input">
+                <option value="">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="rejected">Rejected</option>
             </select>
-            <select id="currencyFilter" class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <option value="" data-i18n="wallet.allCurrency">Tất cả loại tiền</option>
+            <select id="currencyFilter" class="form-input">
+                <option value="">All Currencies</option>
                 <option value="USDT">USDT</option>
-                <option value="VND">VNĐ</option>
+                <option value="VND">VND</option>
             </select>
-            <button onclick="loadDeposits()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+            <button onclick="loadDeposits()" class="btn btn-primary">
                 <i class="fas fa-filter mr-2"></i>
-                <span data-i18n="wallet.filterBtn">Lọc</span>
+                Filter
             </button>
         </div>
     </div>
 
     <!-- Deposits List -->
-    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+    <div class="card overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full">
-                <thead class="bg-gray-50 border-b border-gray-200">
+                <thead class="bg-dark-800 border-b border-dark-700">
                     <tr>
-                        <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700" data-i18n="wallet.time">Thời gian</th>
-                        <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700" data-i18n="wallet.amount">Số tiền</th>
-                        <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700" data-i18n="wallet.currency">Loại tiền</th>
-                        <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700" data-i18n="wallet.txHash">Transaction Hash</th>
-                        <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700" data-i18n="order.status">Trạng thái</th>
-                        <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700" data-i18n="wallet.note">Ghi chú</th>
+                        <th class="px-4 md:px-6 py-4 text-left text-xs md:text-sm font-semibold text-dark-300">Time</th>
+                        <th class="px-4 md:px-6 py-4 text-left text-xs md:text-sm font-semibold text-dark-300">Amount</th>
+                        <th class="px-4 md:px-6 py-4 text-left text-xs md:text-sm font-semibold text-dark-300 hidden md:table-cell">Currency</th>
+                        <th class="px-4 md:px-6 py-4 text-left text-xs md:text-sm font-semibold text-dark-300 hidden lg:table-cell">Transaction Hash</th>
+                        <th class="px-4 md:px-6 py-4 text-left text-xs md:text-sm font-semibold text-dark-300">Status</th>
+                        <th class="px-4 md:px-6 py-4 text-left text-xs md:text-sm font-semibold text-dark-300 hidden md:table-cell">Note</th>
                     </tr>
                 </thead>
                 <tbody id="depositsTableBody">
                     <tr>
                         <td colspan="6" class="px-6 py-8 text-center">
-                            <i class="fas fa-spinner fa-spin text-3xl text-gray-400 mb-2"></i>
-                            <p class="text-gray-500" data-i18n="common.loading">Đang tải...</p>
+                            <i class="fas fa-spinner fa-spin text-3xl text-dark-500 mb-2"></i>
+                            <p class="text-dark-400">Loading...</p>
                         </td>
                     </tr>
                 </tbody>
@@ -176,11 +187,14 @@ function displayDeposits(deposits) {
     if (deposits.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="6" class="px-6 py-8 text-center">
-                    <i class="fas fa-inbox text-4xl text-gray-300 mb-2"></i>
-                    <p class="text-gray-500">Chưa có giao dịch nạp tiền nào</p>
-                    <a href="/wallet/deposit/" class="inline-block mt-4 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
-                        Nạp tiền ngay
+                <td colspan="6" class="px-6 py-12 text-center">
+                    <div class="w-16 h-16 bg-dark-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-inbox text-3xl text-dark-500"></i>
+                    </div>
+                    <p class="text-dark-400 mb-4">No deposit transactions yet</p>
+                    <a href="/wallet/deposit/" class="btn btn-primary">
+                        <i class="fas fa-plus mr-2"></i>
+                        Deposit Now
                     </a>
                 </td>
             </tr>
@@ -190,47 +204,52 @@ function displayDeposits(deposits) {
 
     deposits.forEach(deposit => {
         const statusColors = {
-            'pending': 'bg-yellow-100 text-yellow-800',
-            'confirmed': 'bg-green-100 text-green-800',
-            'rejected': 'bg-red-100 text-red-800'
+            'pending': 'bg-yellow-500/20 text-yellow-400',
+            'confirmed': 'bg-green-500/20 text-green-400',
+            'rejected': 'bg-red-500/20 text-red-400'
         };
 
         const statusTexts = {
-            'pending': 'Chờ duyệt',
-            'confirmed': 'Đã duyệt',
-            'rejected': 'Bị từ chối'
+            'pending': 'Pending',
+            'confirmed': 'Confirmed',
+            'rejected': 'Rejected'
         };
 
         const tr = document.createElement('tr');
-        tr.className = 'border-b border-gray-100 hover:bg-gray-50';
+        tr.className = 'border-b border-dark-700 hover:bg-dark-800/50 transition-colors';
         tr.innerHTML = `
-            <td class="px-6 py-4 text-sm text-gray-600">
-                ${new Date(deposit.created_at).toLocaleString('vi-VN')}
+            <td class="px-4 md:px-6 py-4 text-xs md:text-sm text-dark-300">
+                ${new Date(deposit.created_at).toLocaleString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })}
             </td>
-            <td class="px-6 py-4 text-sm font-semibold text-gray-800">
-                ${deposit.amount} ${deposit.currency}
+            <td class="px-4 md:px-6 py-4 text-sm font-semibold text-white">
+                ${deposit.amount} <span class="text-dark-400">${deposit.currency}</span>
             </td>
-            <td class="px-6 py-4 text-sm text-gray-600">
+            <td class="px-4 md:px-6 py-4 text-sm text-dark-300 hidden md:table-cell">
                 ${deposit.currency}
             </td>
-            <td class="px-6 py-4 text-sm text-gray-600">
+            <td class="px-4 md:px-6 py-4 text-sm text-dark-300 hidden lg:table-cell">
                 <div class="flex items-center">
-                    <span class="truncate max-w-xs" title="${deposit.transaction_hash || 'N/A'}">
-                        ${deposit.transaction_hash ? deposit.transaction_hash.substring(0, 20) + '...' : 'N/A'}
+                    <span class="truncate max-w-[120px]" title="${deposit.transaction_hash || 'N/A'}">
+                        ${deposit.transaction_hash ? deposit.transaction_hash.substring(0, 16) + '...' : 'N/A'}
                     </span>
                     ${deposit.transaction_hash ? `
-                        <button onclick="copyToClipboard('${deposit.transaction_hash}')" class="ml-2 text-blue-600 hover:text-blue-800">
+                        <button onclick="copyToClipboard('${deposit.transaction_hash}')" class="ml-2 text-primary-400 hover:text-primary-300 transition-colors">
                             <i class="fas fa-copy"></i>
                         </button>
                     ` : ''}
                 </div>
             </td>
-            <td class="px-6 py-4">
+            <td class="px-4 md:px-6 py-4">
                 <span class="px-3 py-1 rounded-full text-xs font-semibold ${statusColors[deposit.status]}">
                     ${statusTexts[deposit.status]}
                 </span>
             </td>
-            <td class="px-6 py-4 text-sm text-gray-600">
+            <td class="px-4 md:px-6 py-4 text-sm text-dark-400 hidden md:table-cell">
                 ${deposit.admin_note || '-'}
             </td>
         `;
@@ -240,7 +259,11 @@ function displayDeposits(deposits) {
 
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(() => {
-        alert('Đã copy Transaction Hash!');
+        if (window.modal) {
+            window.modal.success('Copied!', 'Transaction hash copied to clipboard', { autoClose: true, autoCloseDelay: 1500 });
+        } else {
+            alert('Transaction Hash copied!');
+        }
     });
 }
 </script>
